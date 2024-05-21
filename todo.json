@@ -1,0 +1,158 @@
+[
+	{
+		"type": "group",
+		"title": "Demos",
+		"children": [
+			{
+				"type": "group",
+				"title": "C++",
+				"children": [
+					{
+						"type": "task",
+						"title": "3D .obj loader",
+						"desc": null,
+						"done": false
+					},
+					{
+						"type": "task",
+						"title": "Mode 7 infinite forest demo",
+						"desc": null,
+						"done": false
+					},
+					{
+						"type": "task",
+						"title": "Simple drawing program (canvas resizing)",
+						"desc": null,
+						"done": false
+					}
+				]
+			},
+			{
+				"type": "group",
+				"title": "C",
+				"children": [
+					{
+						"type": "task",
+						"title": "Palette loading and displaying program",
+						"desc": null,
+						"done": true
+					},
+					{
+						"type": "task",
+						"title": "Triangles demo",
+						"desc": null,
+						"done": true
+					},
+					{
+						"type": "task",
+						"title": "Blitting demo",
+						"desc": null,
+						"done": true
+					},
+					{
+						"type": "task",
+						"title": "Rotate/transform demo",
+						"desc": null,
+						"done": true
+					},
+					{
+						"type": "task",
+						"title": "Simple 3d dots demo",
+						"desc": null,
+						"done": true
+					},
+					{
+						"type": "task",
+						"title": "Custom shader demo (blur)",
+						"desc": null,
+						"done": true
+					},
+					{
+						"type": "task",
+						"title": "Text rendering demo",
+						"desc": null,
+						"done": true
+					},
+					{
+						"type": "task",
+						"title": "Barycentric rainbow triangle demo",
+						"desc": null,
+						"done": false
+					}
+				]
+			}
+		]
+	},
+	{
+		"type": "group",
+		"title": "Features",
+		"children": [
+			{
+				"type": "task",
+				"title": "Triangle rotating/transforming draw/fill functions",
+				"desc": null,
+				"done": false
+			},
+			{
+				"type": "task",
+				"title": "Palette/image loading",
+				"desc": null,
+				"done": true
+			},
+			{
+				"type": "task",
+				"title": "Rectangle/line draw/fill functions",
+				"desc": null,
+				"done": true
+			},
+			{
+				"type": "task",
+				"title": "Circle draw/fill functions",
+				"desc": null,
+				"done": true
+			},
+			{
+				"type": "task",
+				"title": "Triangle draw/fill functions",
+				"desc": null,
+				"done": true
+			},
+			{
+				"type": "task",
+				"title": "Blit function",
+				"desc": null,
+				"done": true
+			},
+			{
+				"type": "task",
+				"title": "Colormap generation",
+				"desc": null,
+				"done": true
+			},
+			{
+				"type": "task",
+				"title": "Utility functions (Palette convert, resize, copy...)",
+				"desc": null,
+				"done": true
+			},
+			{
+				"type": "task",
+				"title": "Shaders and built-in blend shader",
+				"desc": null,
+				"done": true
+			},
+			{
+				"type": "task",
+				"title": "Text rendering (font files)",
+				"desc": null,
+				"done": true
+			},
+			{
+				"type": "task",
+				"title": "Blit rotating/transforming functions",
+				"desc": null,
+				"done": true
+			}
+		]
+	}
+]
