@@ -1,12 +1,12 @@
 #ifndef PIF_H_HEADER_GUARD
 #define PIF_H_HEADER_GUARD
 
-#include <stdio.h>   /* fopen, fclose, FILE, EOF, fprintf, stderr */
+#include <stdio.h>   /* fopen, fclose, FILE, EOF, fprintf, stderr, fwrite, fread */
 #include <stdlib.h>  /* malloc, realloc, free, abort */
-#include <string.h>  /* memset, memcpy */
+#include <string.h>  /* memset, memcpy, strncpy */
 #include <stdint.h>  /* uint8_t, uint32_t */
 #include <stdbool.h> /* bool, true, false */
-#include <math.h>    /* max */
+#include <math.h>    /* sin, cos, round */
 
 #ifndef PIF_alloc
 #	define PIF_alloc(SIZE) malloc(SIZE)
