@@ -16,15 +16,14 @@
 		<img alt="Pull requests" src="https://img.shields.io/github/issues-pr/LordOfTrident/pif?style=for-the-badge&color=4f79e4">
 	</a>
 	<br><br><br>
-	<img src="./res/logo.png" width="350px">
 	<h1 align="center">PIF</h1>
 	<p align="center">🎨 Palettized image format and software renderer 🖼️</p>
 	<p align="center">
 		<a href="#documentation">Documentation</a>
 		.
-		<a href="#demos">Try Demos</a>
+		<a href="#demos">Demos</a>
 		.
-		<a href="todo.md">See TODO</a>
+		<a href="todo.md">Todo</a>
 		·
 		<a href="https://github.com/LordOfTrident/pif/issues">Report Bug</a>
 		·
