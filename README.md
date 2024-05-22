@@ -39,7 +39,7 @@
 		<li>
 			<a href="#introduction">Introduction</a>
 			<ul>
-				<li><a href="#backstory">Why</a></li>
+				<li><a href="#why">Why</a></li>
 			</ul>
 		</li>
 		<li>
