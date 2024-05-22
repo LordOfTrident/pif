@@ -113,12 +113,8 @@ void demoCleanup(Demo *this) {
 
 void demoFrame(Demo *this) {
 	static uint64_t last = 0, now = 0;
-	bool firstFrame = last == 0 && now == 0;
-	last = now;
+	last = last == 0 && now == 0? SDL_GetPerformanceCounter() : now;
 	now  = SDL_GetPerformanceCounter();
-
-	if (firstFrame)
-		return;
 
 	this->dt = (double)(now - last) * 1000 / (double)SDL_GetPerformanceFrequency();
 	this->elapsedTime += this->dt;
