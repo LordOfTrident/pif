@@ -32,8 +32,10 @@ typedef struct {
 	PIF_Palette   *pal;
 	PIF_Image     *canv, *colormap;
 
-	float aspectRatio, dt, elapsedTime;
+	float aspectRatio;
 	int   winW, winH, mouseX, mouseY;
+
+	double dt, elapsedTime;
 
 	bool running;
 } Demo;
@@ -111,10 +113,14 @@ void demoCleanup(Demo *this) {
 
 void demoFrame(Demo *this) {
 	static uint64_t last = 0, now = 0;
-	last     = now;
-	now      = SDL_GetPerformanceCounter();
-	this->dt = (float)(now - last) * 1000 / (float)SDL_GetPerformanceFrequency();
+	bool firstFrame = last == 0 && now == 0;
+	last = now;
+	now  = SDL_GetPerformanceCounter();
 
+	if (firstFrame)
+		return;
+
+	this->dt = (double)(now - last) * 1000 / (double)SDL_GetPerformanceFrequency();
 	this->elapsedTime += this->dt;
 }
 

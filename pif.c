@@ -2,7 +2,7 @@
 
 #define PIF_error(ERR, MSG) ((ERR) != NULL? (*(ERR) = MSG, NULL) : NULL)
 
-#define PIF_checkAlloc(PTR)                                                          \
+#define PIF_checkAlloc(PTR)                                                         \
 	do {                                                                            \
 		if (PTR == NULL) {                                                          \
 			fprintf(stderr, "%s:%i: PIF allocation failure\n", __FILE__, __LINE__); \

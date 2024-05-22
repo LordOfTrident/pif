@@ -20,7 +20,7 @@ static struct {
 	unsigned  seed;
 	bool      paused, clicked;
 	Blur      blur;
-	float     animTime;
+	double    animTime;
 } demo;
 
 static void setup(void) {
