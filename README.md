@@ -16,6 +16,7 @@
 		<img alt="Pull requests" src="https://img.shields.io/github/issues-pr/LordOfTrident/pif?style=for-the-badge&color=4f79e4">
 	</a>
 	<br><br><br>
+	<img src="./res/logo-upscaled.png" width="350px">
 	<h1 align="center">PIF</h1>
 	<p align="center">🎨 Palettized image format and software renderer 🖼️</p>
 	<p align="center">
@@ -35,7 +36,12 @@
 <details>
 	<summary>Table of contents</summary>
 	<ul>
-		<li><a href="#introduction">Introduction</a></li>
+		<li>
+			<a href="#introduction">Introduction</a>
+			<ul>
+				<li><a href="#backstory">Why</a></li>
+			</ul>
+		</li>
 		<li>
 			<a href="#demos">Demos</a>
 			<ul>
@@ -55,18 +61,27 @@
 </details>
 
 ## Introduction
-While making a not-yet-published retro 256-color 3D raycaster engine, i found myself writing a lot
-of code for the palettized software rendering, image/palette file format loading and text rendering.
-I needed to make utilities to convert from .bmp files to my palettized image files, utilities to
-view these palettized image files and more.
+*PIF* is a library for palettized [software rendering](https://en.wikipedia.org/wiki/Software_rendering)
+(inspired by the [Doom](https://doomwiki.org/wiki/PLAYPAL) and [Quake](https://fabiensanglard.net/quake2/quake2_software_renderer.php)
+palettized software renderers) and handling `.pif` (Palettized Image Format) files, `.pal` (Palette) files and `.pbf` (Palettized Bitmap Font) files.
 
-I realised i am probably going to do more 256-color software rendering in the future, so i decided to
+### Why
+While making a not-yet-published retro 256-color [3D raycaster engine](https://lodev.org/cgtutor/raycasting.html),
+I found myself writing a lot of code for the palettized software rendering, image/palette file format
+loading and text rendering. I had to make utilities to convert from `.bmp` files to my palettized image
+files, utilities to view these palettized image files and more.
+
+I realised I am probably going to do more palettized software rendering in the future, so I decided to
 make a library for it to handle all of these things like image files, palettes, software rendering,
-converting etc. Then i can make utilities for working with these image files, and reuse all of this
-for every 256-color software rendered game i make in the future. And so the idea of PIF was born.
+converting etc. Then I could make utilities for working with these image files, and reuse all of this
+for every palettized software rendered game I make in the future. And so the idea of PIF was born.
 
 ## Demos
-> Showcase gifs and videos coming soon.
+<div align="center">
+	<img src="./res/demo2.gif" width="45%">
+	<img src="./res/demo1.gif" width="45%">
+	<img src="./res/demo3.gif" width="60%">
+</div>
 
 ### Pre-requisites
 The demo programs use C/C++ and the SDL2 library, so the following is required:
@@ -105,6 +120,8 @@ If you find any bugs, please, [create an issue and report them](https://github.c
 <br>
 
 <div align="center">
+	<div align="center"><img src="./res/logo-retro-upscaled.png" width="100px"></div>
+	<br>
 	<a href="https://en.wikipedia.org/wiki/C_(programming_language)">
 		<img alt="C99" src="https://img.shields.io/badge/C99-0069a9?style=for-the-badge&logo=c&logoColor=white">
 	</a>
