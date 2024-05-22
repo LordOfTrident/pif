@@ -61,7 +61,7 @@
 </details>
 
 ## Introduction
-*PIF* is a library for palettized [software rendering](https://en.wikipedia.org/wiki/Software_rendering)
+**PIF** is a library for palettized [software rendering](https://en.wikipedia.org/wiki/Software_rendering)
 (inspired by the [Doom](https://doomwiki.org/wiki/PLAYPAL) and [Quake](https://fabiensanglard.net/quake2/quake2_software_renderer.php)
 palettized software renderers) and handling `.pif` (Palettized Image Format) files, `.pal` (Palette) files and `.pbf` (Palettized Bitmap Font) files.
 
