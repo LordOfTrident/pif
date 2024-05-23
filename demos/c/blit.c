@@ -1,7 +1,7 @@
 #include <time.h> /* time */
 #include <math.h> /* sin, cos */
 
-#include "shared.inc"
+#include <demo.c>
 
 #define TITLE "Blit | Escape to quit"
 #define SCR_W 400
@@ -9,7 +9,7 @@
 #define SCALE 1
 
 static struct {
-	Demo d;
+	DemoData d;
 
 	PIF_Image *img;
 } demo;

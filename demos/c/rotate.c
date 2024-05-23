@@ -1,7 +1,7 @@
 #include <time.h> /* time */
 #include <math.h> /* sqrt */
 
-#include "shared.inc"
+#include <demo.c>
 
 #define TITLE "Rotate | Escape to quit"
 #define SCR_W 600
@@ -9,7 +9,7 @@
 #define SCALE 1
 
 static struct {
-	Demo d;
+	DemoData d;
 
 	PIF_Image *img;
 } demo;

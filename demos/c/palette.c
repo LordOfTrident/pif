@@ -1,4 +1,4 @@
-#include "shared.inc"
+#include <demo.c>
 
 #define TITLE "Palette | Escape to quit"
 #define SCR_W 480
@@ -6,7 +6,7 @@
 #define SCALE 30
 
 static struct {
-	Demo d;
+	DemoData d;
 
 	PIF_Font *font;
 } demo;

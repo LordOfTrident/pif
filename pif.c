@@ -1,5 +1,9 @@
 #include "pif.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #define PIF_error(ERR, MSG) ((ERR) != NULL? (*(ERR) = MSG, NULL) : NULL)
 
 #define PIF_checkAlloc(PTR)                                                         \
@@ -9,18 +13,6 @@
 			abort();                                                                \
 		}                                                                           \
 	} while (0)
-
-#define PIF_swap(A, B)                      \
-	do {                                   \
-		PIF_assert(sizeof(A) == sizeof(B)); \
-		uint8_t tmp_[sizeof(A)];           \
-		memcpy(tmp_, &(A), sizeof(A));     \
-		A = B;                             \
-		memcpy(&(B), tmp_, sizeof(B));     \
-	} while (0)
-
-#define PIF_max(A, B) ((A) > (B)? (A) : (B))
-#define PIF_min(A, B) ((A) > (B)? (B) : (A))
 
 static void PIF_invertMatrix2x2(float input[2][2], float output[2][2]) {
 	float n, mat[2][2] = {
@@ -158,28 +150,28 @@ PIF_DEF int PIF_rgbDiff(PIF_Rgb a, PIF_Rgb b) {
 }
 
 PIF_DEF PIF_Rgb PIF_rgbLerp(PIF_Rgb a, PIF_Rgb b, float t) {
-	return (PIF_Rgb){
-		.r = PIF_lerp(a.r, b.r, t),
-		.g = PIF_lerp(a.g, b.g, t),
-		.b = PIF_lerp(a.b, b.b, t),
-	};
+	PIF_Rgb rgb;
+	rgb.r = PIF_lerp(a.r, b.r, t);
+	rgb.g = PIF_lerp(a.g, b.g, t);
+	rgb.b = PIF_lerp(a.b, b.b, t);
+	return rgb;
 }
 
-PIF_DEF uint32_t PIF_rgbToPixelRgba32(PIF_Rgb this) {
+PIF_DEF uint32_t PIF_rgbToPixelRgba32(PIF_Rgb self) {
 	uint8_t bytes[4] = {
 		255,
-		this.b,
-		this.g,
-		this.r,
+		self.b,
+		self.g,
+		self.r,
 	};
 	return PIF_bytesToU32(bytes);
 }
 
-PIF_DEF uint32_t PIF_rgbToPixelAbgr32(PIF_Rgb this) {
+PIF_DEF uint32_t PIF_rgbToPixelAbgr32(PIF_Rgb self) {
 	uint8_t bytes[4] = {
-		this.r,
-		this.g,
-		this.b,
+		self.r,
+		self.g,
+		self.b,
 		255,
 	};
 	return PIF_bytesToU32(bytes);
@@ -188,34 +180,36 @@ PIF_DEF uint32_t PIF_rgbToPixelAbgr32(PIF_Rgb this) {
 PIF_DEF PIF_Rgb PIF_rgbFromPixelRgba32(uint32_t pixel) {
 	uint8_t bytes[4];
 	PIF_u32ToBytes(pixel, bytes);
-	return (PIF_Rgb){
-		.r = bytes[3],
-		.g = bytes[2],
-		.b = bytes[1],
-	};
+
+	PIF_Rgb rgb;
+	rgb.r = bytes[3];
+	rgb.g = bytes[2];
+	rgb.b = bytes[1];
+	return rgb;
 }
 
 
 PIF_DEF PIF_Rgb PIF_rgbFromPixelAbgr32(uint32_t pixel) {
 	uint8_t bytes[4];
 	PIF_u32ToBytes(pixel, bytes);
-	return (PIF_Rgb){
-		.r = bytes[0],
-		.g = bytes[1],
-		.b = bytes[2],
-	};
+
+	PIF_Rgb rgb;
+	rgb.r = bytes[0];
+	rgb.g = bytes[1];
+	rgb.b = bytes[2];
+	return rgb;
 }
 
 PIF_DEF PIF_Palette *PIF_paletteNew(int size) {
 	PIF_assert(size <= PIF_COLORS);
 
 	int          cap  = sizeof(PIF_Palette) + (size - 1) * sizeof(PIF_Rgb);
-	PIF_Palette *this = (PIF_Palette*)PIF_alloc(cap);
-	PIF_checkAlloc(this);
+	PIF_Palette *self = (PIF_Palette*)PIF_alloc(cap);
+	PIF_checkAlloc(self);
 
-	memset(this, 0, cap);
-	this->size = size;
-	return this;
+	memset(self, 0, cap);
+	self->size = size;
+	return self;
 }
 
 PIF_DEF PIF_Palette *PIF_paletteRead(FILE *file, const char **err) {
@@ -224,32 +218,32 @@ PIF_DEF PIF_Palette *PIF_paletteRead(FILE *file, const char **err) {
 	/* Verify magic bytes */
 	char magic[sizeof(PIF_PALETTE_MAGIC) - 1];
 	if (fread(magic, 1, sizeof(magic), file) != sizeof(magic))
-		return PIF_error(err, "Failed to read magic bytes");
+		return (PIF_Palette*)PIF_error(err, "Failed to read magic bytes");
 
 	if (strncmp(magic, PIF_PALETTE_MAGIC, sizeof(magic)) != 0)
-		return PIF_error(err, "File is not a PIF palette");
+		return (PIF_Palette*)PIF_error(err, "File is not a PIF palette");
 
 	/* Read header */
 	int maxColor = fgetc(file);
 	if (maxColor == EOF)
-		return PIF_error(err, "Failed to read PIF palette maximum color index");
+		return (PIF_Palette*)PIF_error(err, "Failed to read PIF palette maximum color index");
 
-	PIF_Palette *this = PIF_paletteNew(maxColor + 1);
-	PIF_assert(this != NULL);
+	PIF_Palette *self = PIF_paletteNew(maxColor + 1);
+	PIF_assert(self != NULL);
 
 	/* Read body */
-	for (int i = 0; i < this->size; ++ i) {
+	for (int i = 0; i < self->size; ++ i) {
 		uint8_t bytes[3];
 		if (fread(bytes, 1, sizeof(bytes), file) != sizeof(bytes)) {
-			PIF_paletteFree(this);
-			return PIF_error(err, "Failed to read PIF palette body");
+			PIF_paletteFree(self);
+			return (PIF_Palette*)PIF_error(err, "Failed to read PIF palette body");
 		}
 
-		this->map[i].r = bytes[0];
-		this->map[i].g = bytes[1];
-		this->map[i].b = bytes[2];
+		self->map[i].r = bytes[0];
+		self->map[i].g = bytes[1];
+		self->map[i].b = bytes[2];
 	}
-	return this;
+	return self;
 }
 
 PIF_DEF PIF_Palette *PIF_paletteLoad(const char *path, const char **err) {
@@ -257,65 +251,65 @@ PIF_DEF PIF_Palette *PIF_paletteLoad(const char *path, const char **err) {
 
 	FILE *file = fopen(path, "rb");
 	if (file == NULL)
-		return PIF_error(err, "Could not open file");
+		return (PIF_Palette*)PIF_error(err, "Could not open file");
 
-	PIF_Palette *this = PIF_paletteRead(file, err);
+	PIF_Palette *self = PIF_paletteRead(file, err);
 
 	fclose(file);
-	return this;
+	return self;
 }
 
-PIF_DEF void PIF_paletteWrite(PIF_Palette *this, FILE *file) {
-	PIF_assert(this != NULL);
+PIF_DEF void PIF_paletteWrite(PIF_Palette *self, FILE *file) {
+	PIF_assert(self != NULL);
 	PIF_assert(file != NULL);
 
 	/* Write magic bytes */
 	fwrite(PIF_PALETTE_MAGIC, 1, sizeof(PIF_PALETTE_MAGIC) - 1, file);
 
 	/* Write header */
-	fputc(this->size - 1, file);
+	fputc(self->size - 1, file);
 
 	/* Write body */
-	for (int i = 0; i < this->size; ++ i) {
+	for (int i = 0; i < self->size; ++ i) {
 		uint8_t bytes[3] = {
-			this->map[i].r,
-			this->map[i].g,
-			this->map[i].b,
+			self->map[i].r,
+			self->map[i].g,
+			self->map[i].b,
 		};
 		fwrite(bytes, 1, sizeof(bytes), file);
 	}
 }
 
-PIF_DEF int PIF_paletteSave(PIF_Palette *this, const char *path) {
-	PIF_assert(this != NULL);
+PIF_DEF int PIF_paletteSave(PIF_Palette *self, const char *path) {
+	PIF_assert(self != NULL);
 	PIF_assert(path != NULL);
 
 	FILE *file = fopen(path, "wb");
 	if (file == NULL)
 		return -1;
 
-	PIF_paletteWrite(this, file);
+	PIF_paletteWrite(self, file);
 
 	fclose(file);
 	return 0;
 }
 
-PIF_DEF void PIF_paletteFree(PIF_Palette *this) {
-	PIF_assert(this != NULL);
+PIF_DEF void PIF_paletteFree(PIF_Palette *self) {
+	PIF_assert(self != NULL);
 
-	PIF_free(this);
+	PIF_free(self);
 }
 
-PIF_DEF uint8_t PIF_paletteClosest(PIF_Palette *this, PIF_Rgb rgb) {
-	PIF_assert(this != NULL);
+PIF_DEF uint8_t PIF_paletteClosest(PIF_Palette *self, PIF_Rgb rgb) {
+	PIF_assert(self != NULL);
 
 	uint8_t color   =  0;
 	int     minDiff = -1;
-	for (int i = 0; i < this->size; ++ i) {
+	for (int i = 0; i < self->size; ++ i) {
 		if (i == PIF_TRANSPARENT)
 			continue;
 
-		int diff = PIF_rgbDiff(rgb, this->map[i]);
+		int diff = PIF_rgbDiff(rgb, self->map[i]);
 		if (minDiff == -1 || diff < minDiff) {
 			minDiff = diff;
 			color   = i;
@@ -324,11 +318,11 @@ PIF_DEF uint8_t PIF_paletteClosest(PIF_Palette *this, PIF_Rgb rgb) {
 	return color;
 }
 
-PIF_DEF PIF_Image *PIF_paletteCreateColormap(PIF_Palette *this, int shades, float t) {
-	PIF_assert(this != NULL);
+PIF_DEF PIF_Image *PIF_paletteCreateColormap(PIF_Palette *self, int shades, float t) {
+	PIF_assert(self != NULL);
 
-	PIF_Image *colormap = PIF_imageNew(this->size, this->size + shades);
-	for (int x = 0; x < this->size; ++ x) {
+	PIF_Image *colormap = PIF_imageNew(self->size, self->size + shades);
+	for (int x = 0; x < self->size; ++ x) {
 		for (int y = 0; y < shades; ++ y) {
 			uint8_t color;
 			if (x == PIF_TRANSPARENT)
@@ -336,28 +330,32 @@ PIF_DEF PIF_Image *PIF_paletteCreateColormap(PIF_Palette *this, int shades, floa
 			else {
 				float darken = (float)(shades - y) / (float)(shades / 2);
 
-				int r = (int)this->map[x].r * darken;
-				int g = (int)this->map[x].g * darken;
-				int b = (int)this->map[x].b * darken;
+				int r = (int)self->map[x].r * darken;
+				int g = (int)self->map[x].g * darken;
+				int b = (int)self->map[x].b * darken;
 
 				if (r > 255) r = 255;
 				if (g > 255) g = 255;
 				if (b > 255) b = 255;
 
-				color = PIF_paletteClosest(this, (PIF_Rgb){.r = r, .g = g, .b = b});
+				PIF_Rgb rgb;
+				rgb.r = r;
+				rgb.g = g;
+				rgb.b = b;
+				color = PIF_paletteClosest(self, rgb);
 			}
 
 			*PIF_imageAt(colormap, x, y) = color;
 		}
 	}
 
-	for (int y = 0; y < this->size; ++ y) {
-		for (int x = 0; x < this->size; ++ x) {
+	for (int y = 0; y < self->size; ++ y) {
+		for (int x = 0; x < self->size; ++ x) {
 			uint8_t color;
 			if (x == PIF_TRANSPARENT || y == PIF_TRANSPARENT)
 				color = PIF_TRANSPARENT;
 			else
-				color = PIF_paletteClosest(this, PIF_rgbLerp(this->map[x], this->map[y], t));
+				color = PIF_paletteClosest(self, PIF_rgbLerp(self->map[x], self->map[y], t));
 
 			*PIF_imageAt(colormap, x, y + shades) = color;
 		}
@@ -405,14 +403,15 @@ PIF_DEF void PIF_exCopyShader(int x, int y, uint8_t *pixel, uint8_t color, PIF_I
 
 PIF_DEF PIF_Image *PIF_imageNew(int w, int h) {
 	int        cap  = sizeof(PIF_Image) + w * h - 1;
-	PIF_Image *this = (PIF_Image*)PIF_alloc(cap);
-	PIF_checkAlloc(this);
+	PIF_Image *self = (PIF_Image*)PIF_alloc(cap);
+	PIF_checkAlloc(self);
 
-	memset(this, 0, cap);
-	this->w    = w;
-	this->h    = h;
-	this->size = w * h;
-	return this;
+	memset(self, 0, cap);
+	self->w    = w;
+	self->h    = h;
+	self->size = w * h;
+	self->skipTransparent = true;
+	return self;
 }
 
 PIF_DEF PIF_Image *PIF_imageRead(FILE *file, const char **err) {
@@ -421,24 +420,24 @@ PIF_DEF PIF_Image *PIF_imageRead(FILE *file, const char **err) {
 	/* Verify magic bytes */
 	char magic[sizeof(PIF_IMAGE_MAGIC) - 1];
 	if (fread(magic, 1, sizeof(magic), file) != sizeof(magic))
-		return PIF_error(err, "Failed to read magic bytes");
+		return (PIF_Image*)PIF_error(err, "Failed to read magic bytes");
 
 	if (strncmp(magic, PIF_IMAGE_MAGIC, sizeof(magic)) != 0)
-		return PIF_error(err, "File is not a PIF image");
+		return (PIF_Image*)PIF_error(err, "File is not a PIF image");
 
 	/* Read header */
 	uint32_t w, h;
 	if (PIF_read32(file, &w) != 0 || PIF_read32(file, &h) != 0)
-		return PIF_error(err, "Failed to read PIF image size");
+		return (PIF_Image*)PIF_error(err, "Failed to read PIF image size");
 
-	PIF_Image *this = PIF_imageNew(w, h);
+	PIF_Image *self = PIF_imageNew(w, h);
 
 	/* Read body */
-	if (fread(this->buf, 1, this->size, file) != (size_t)this->size) {
-		PIF_imageFree(this);
-		return PIF_error(err, "Failed to read PIF image body");
+	if (fread(self->buf, 1, self->size, file) != (size_t)self->size) {
+		PIF_imageFree(self);
+		return (PIF_Image*)PIF_error(err, "Failed to read PIF image body");
 	}
-	return this;
+	return self;
 }
 
 PIF_DEF PIF_Image *PIF_Image_load(const char *path, const char **err) {
@@ -446,133 +445,145 @@ PIF_DEF PIF_Image *PIF_Image_load(const char *path, const char **err) {
 
 	FILE *file = fopen(path, "rb");
 	if (file == NULL)
-		return PIF_error(err, "Could not open file");
+		return (PIF_Image*)PIF_error(err, "Could not open file");
 
-	PIF_Image *this = PIF_imageRead(file, err);
+	PIF_Image *self = PIF_imageRead(file, err);
 
 	fclose(file);
-	return this;
+	return self;
 }
 
-PIF_DEF void PIF_imageWrite(PIF_Image *this, FILE *file) {
-	PIF_assert(this != NULL);
+PIF_DEF void PIF_imageWrite(PIF_Image *self, FILE *file) {
+	PIF_assert(self != NULL);
 	PIF_assert(file != NULL);
 
 	/* Write magic bytes */
 	fwrite(PIF_IMAGE_MAGIC, 1, sizeof(PIF_IMAGE_MAGIC) - 1, file);
 
 	/* Write header */
-	PIF_write32(file, this->w);
-	PIF_write32(file, this->h);
+	PIF_write32(file, self->w);
+	PIF_write32(file, self->h);
 
 	/* Write body */
-	fwrite(this->buf, 1, this->size, file);
+	fwrite(self->buf, 1, self->size, file);
 }
 
-PIF_DEF int PIF_imageSave(PIF_Image *this, const char *path) {
-	PIF_assert(this != NULL);
+PIF_DEF int PIF_imageSave(PIF_Image *self, const char *path) {
+	PIF_assert(self != NULL);
 	PIF_assert(path != NULL);
 
 	FILE *file = fopen(path, "wb");
 	if (file == NULL)
 		return -1;
 
-	PIF_imageWrite(this, file);
+	PIF_imageWrite(self, file);
 
 	fclose(file);
 	return 0;
 }
 
-PIF_DEF void PIF_imageFree(PIF_Image *this) {
-	PIF_assert(this != NULL);
+PIF_DEF void PIF_imageFree(PIF_Image *self) {
+	PIF_assert(self != NULL);
 
-	PIF_free(this);
+	PIF_free(self);
 }
 
-PIF_DEF void PIF_imageSetShader(PIF_Image *this, PIF_Shader shader, void *data) {
-	PIF_assert(this != NULL);
+PIF_DEF void PIF_imageSkipTransparent(PIF_Image *self, bool enable) {
+	PIF_assert(self != NULL);
 
-	this->shader = shader;
-	this->data   = data;
+	self->skipTransparent = enable;
 }
 
-PIF_DEF void PIF_imageConvertPalette(PIF_Image *this, PIF_Palette *from, PIF_Palette *to) {
-	PIF_assert(this != NULL);
+PIF_DEF void PIF_imageSetShader(PIF_Image *self, PIF_Shader shader, void *data) {
+	PIF_assert(self != NULL);
+
+	self->shader = shader;
+	self->data   = data;
+}
+
+PIF_DEF void PIF_imageSetShaderData(PIF_Image *self, void *data) {
+	PIF_assert(self != NULL);
+
+	self->data = data;
+}
+
+PIF_DEF void PIF_imageConvertPalette(PIF_Image *self, PIF_Palette *from, PIF_Palette *to) {
+	PIF_assert(self != NULL);
 	PIF_assert(from != NULL);
 	PIF_assert(to   != NULL);
 
-	for (int y = 0; y < this->h; ++ y) {
-		for (int x = 0; x < this->w; ++ x) {
-			uint8_t *pixel = PIF_imageAt(this, x, y);
+	for (int y = 0; y < self->h; ++ y) {
+		for (int x = 0; x < self->w; ++ x) {
+			uint8_t *pixel = PIF_imageAt(self, x, y);
 			*pixel = PIF_paletteClosest(to, from->map[*pixel]);
 		}
 	}
 }
 
-PIF_DEF uint8_t *PIF_imageAt(PIF_Image *this, int x, int y) {
-	PIF_assert(this != NULL);
+PIF_DEF uint8_t *PIF_imageAt(PIF_Image *self, int x, int y) {
+	PIF_assert(self != NULL);
 
-	if (x < 0 || x >= this->w || y < 0 || y >= this->h)
+	if (x < 0 || x >= self->w || y < 0 || y >= self->h)
 		return NULL;
 
-	return this->buf + this->w * y + x;
+	return self->buf + self->w * y + x;
 }
 
-PIF_DEF PIF_Image *PIF_imageResize(PIF_Image *this, int w, int h) {
-	uint8_t *prevBuf = (uint8_t*)PIF_alloc(this->size);
+PIF_DEF PIF_Image *PIF_imageResize(PIF_Image *self, int w, int h, uint8_t color) {
+	uint8_t *prevBuf = (uint8_t*)PIF_alloc(self->size);
 	PIF_checkAlloc(prevBuf);
-	memcpy(prevBuf, this->buf, this->size);
+	memcpy(prevBuf, self->buf, self->size);
 
-	int prevW = this->w, prevH = this->h;
+	int prevW = self->w, prevH = self->h;
 
-	this->w    = w;
-	this->h    = h;
-	this->size = w * h;
-	this       = (PIF_Image*)PIF_realloc(this, sizeof(PIF_Image) + this->size - 1);
-	PIF_checkAlloc(this);
+	self->w    = w;
+	self->h    = h;
+	self->size = w * h;
+	self       = (PIF_Image*)PIF_realloc(self, sizeof(PIF_Image) + self->size - 1);
+	PIF_checkAlloc(self);
 
-	memset(this->buf, 0, this->size);
+	memset(self->buf, color, self->size);
 
-	w = PIF_min(prevW, this->w);
-	h = PIF_min(prevH, this->h);
+	w = PIF_min(prevW, self->w);
+	h = PIF_min(prevH, self->h);
 	for (int y = 0; y < h; ++ y) {
 		for (int x = 0; x < w; ++ x)
-			*PIF_imageAt(this, x, y) = prevBuf[prevW * y + x];
+			*PIF_imageAt(self, x, y) = prevBuf[prevW * y + x];
 	}
 
 	PIF_free(prevBuf);
-	return this;
+	return self;
 }
 
-PIF_DEF void PIF_imageClear(PIF_Image *this, uint8_t color) {
-	PIF_assert(this != NULL);
+PIF_DEF void PIF_imageClear(PIF_Image *self, uint8_t color) {
+	PIF_assert(self != NULL);
 
-	memset(this->buf, color, this->size);
+	memset(self->buf, color, self->size);
 }
 
-PIF_DEF PIF_Image *PIF_imageCopy(PIF_Image *this, PIF_Image *from) {
-	this->w    = from->w;
-	this->h    = from->h;
-	this->size = from->w * from->h;
-	this       = (PIF_Image*)PIF_realloc(this, sizeof(PIF_Image) + this->size - 1);
-	PIF_checkAlloc(this);
+PIF_DEF PIF_Image *PIF_imageCopy(PIF_Image *self, PIF_Image *from) {
+	self->w    = from->w;
+	self->h    = from->h;
+	self->size = from->w * from->h;
+	self       = (PIF_Image*)PIF_realloc(self, sizeof(PIF_Image) + self->size - 1);
+	PIF_checkAlloc(self);
 
-	memcpy(this->buf, from->buf, this->size);
-	return this;
+	memcpy(self->buf, from->buf, self->size);
+	return self;
 }
 
-PIF_DEF PIF_Image *PIF_imageDup(PIF_Image *this) {
-	int        cap   = sizeof(PIF_Image) + this->size - 1;
+PIF_DEF PIF_Image *PIF_imageDup(PIF_Image *self) {
+	int        cap   = sizeof(PIF_Image) + self->size - 1;
 	PIF_Image *duped = (PIF_Image*)PIF_alloc(cap);
-	memcpy(duped, this, cap);
+	memcpy(duped, self, cap);
 	return duped;
 }
 
-PIF_DEF void PIF_imageBlit(PIF_Image *this, PIF_Rect *destRect, PIF_Image *src, PIF_Rect *srcRect) {
-	PIF_assert(this != NULL);
+PIF_DEF void PIF_imageBlit(PIF_Image *self, PIF_Rect *destRect, PIF_Image *src, PIF_Rect *srcRect) {
+	PIF_assert(self != NULL);
 	PIF_assert(src  != NULL);
 
-	PIF_Rect destRect_ = {0, 0, this->w, this->h};
+	PIF_Rect destRect_ = {0, 0, self->w, self->h};
 	PIF_Rect srcRect_  = {0, 0, src->w,  src->h};
 	if (srcRect  == NULL) srcRect  = &srcRect_;
 	if (destRect == NULL) destRect = &destRect_;
@@ -583,82 +594,82 @@ PIF_DEF void PIF_imageBlit(PIF_Image *this, PIF_Rect *destRect, PIF_Image *src, 
 	for (int y = 0; y < destRect->h; ++ y) {
 		int destY = destRect->y + y;
 		if (destY <  0)       continue;
-		if (destY >= this->h) break;
+		if (destY >= self->h) break;
 
 		for (int x = 0; x < destRect->w; ++ x) {
 			int destX = destRect->x + x;
 			if (destX <  0)       continue;
-			if (destX >= this->w) break;
+			if (destX >= self->w) break;
 
 			uint8_t *color = PIF_imageAt(src, scaleX * x + srcRect->x, scaleY * y + srcRect->y);
 			PIF_assert(color != NULL);
 
-			if (*color == PIF_TRANSPARENT)
+			if (*color == PIF_TRANSPARENT && self->skipTransparent)
 				continue;
 
-			PIF_imageDrawPoint(this, destX, destY, *color);
+			PIF_imageDrawPoint(self, destX, destY, *color);
 		}
 	}
 }
 
-PIF_DEF void PIF_imageTransformBlit(PIF_Image *this, PIF_Rect *destRect, PIF_Image *src,
+PIF_DEF void PIF_imageTransformBlit(PIF_Image *self, PIF_Rect *destRect, PIF_Image *src,
                                     PIF_Rect *srcRect, float mat[2][2], int cx, int cy) {
-	PIF_assert(this != NULL);
+	PIF_assert(self != NULL);
 	PIF_assert(src  != NULL);
 
-	PIF_Rect destRect_ = {0, 0, this->w, this->h};
+	PIF_Rect destRect_ = {0, 0, self->w, self->h};
 	PIF_Rect srcRect_  = {0, 0, src->w,  src->h};
 	if (srcRect  == NULL) srcRect  = &srcRect_;
 	if (destRect == NULL) destRect = &destRect_;
 
-	PIF_CopyInfo copyInfo = {
-		.src       = src,
-		.srcRect   = *srcRect,
-		.destRect  = *destRect,
-		.ox        = -cx,
-		.oy        = -cy,
-		.transform = true,
-	};
+	PIF_CopyInfo copyInfo;
+	PIF_zeroStruct(&copyInfo);
+	copyInfo.src       = src;
+	copyInfo.srcRect   = *srcRect;
+	copyInfo.destRect  = *destRect;
+	copyInfo.ox        = -cx;
+	copyInfo.oy        = -cy;
+	copyInfo.transform = true;
 	PIF_invertMatrix2x2(mat, copyInfo.mat);
 
-	PIF_Shader prevShader = this->shader;
-	void      *prevData   = this->data;
-	PIF_imageSetShader(this, PIF_exCopyShader, &copyInfo);
-	PIF_imageFillTransformRect(this, destRect, 1, mat, cx, cy);
-	PIF_imageSetShader(this, prevShader, prevData);
+	PIF_Shader prevShader = self->shader;
+	void      *prevData   = self->data;
+	PIF_imageSetShader(self, PIF_exCopyShader, &copyInfo);
+	PIF_imageFillTransformRect(self, destRect, 1, mat, cx, cy);
+	PIF_imageSetShader(self, prevShader, prevData);
 }
 
-PIF_DEF void PIF_imageRotateBlit(PIF_Image *this, PIF_Rect *destRect, PIF_Image *src,
+PIF_DEF void PIF_imageRotateBlit(PIF_Image *self, PIF_Rect *destRect, PIF_Image *src,
                                  PIF_Rect *srcRect, float angle, int cx, int cy) {
 	float rotMat[2][2];
 	PIF_makeRotationMatrix2x2(angle, rotMat);
-	PIF_imageTransformBlit(this, destRect, src, srcRect, rotMat, cx, cy);
+	PIF_imageTransformBlit(self, destRect, src, srcRect, rotMat, cx, cy);
 }
 
-PIF_DEF void PIF_imageDrawPoint(PIF_Image *this, int x, int y, uint8_t color) {
-	PIF_assert(this != NULL);
+PIF_DEF void PIF_imageDrawPoint(PIF_Image *self, int x, int y, uint8_t color) {
+	PIF_assert(self != NULL);
 
-	if (color == PIF_TRANSPARENT)
+	if (color == PIF_TRANSPARENT && self->skipTransparent)
 		return;
 
-	uint8_t *pixel = PIF_imageAt(this, x, y);
+	uint8_t *pixel = PIF_imageAt(self, x, y);
 	if (pixel == NULL)
 		return;
 
-	if (this->shader == NULL) {
+	if (self->shader == NULL) {
 		*pixel = color;
 		return;
 	}
 
-	this->shader(x, y, pixel, color, this);
+	self->shader(x, y, pixel, color, self);
 }
 
 /* Bresenham's line algorithm */
-PIF_DEF void PIF_imageDrawLine(PIF_Image *this, int x1, int y1, int x2, int y2,
+PIF_DEF void PIF_imageDrawLine(PIF_Image *self, int x1, int y1, int x2, int y2,
                                int n, uint8_t color) {
-	PIF_assert(this != NULL);
+	PIF_assert(self != NULL);
 
-	if (color == PIF_TRANSPARENT)
+	if (color == PIF_TRANSPARENT && self->skipTransparent)
 		return;
 
 	bool swap = abs(y2 - y1) > abs(x2 - x1);
@@ -687,7 +698,7 @@ PIF_DEF void PIF_imageDrawLine(PIF_Image *this, int x1, int y1, int x2, int y2,
 			if (swap)
 				PIF_swap(x, y);
 
-			PIF_imageDrawPoint(this, x, y, color);
+			PIF_imageDrawPoint(self, x, y, color);
 		}
 
 		err -= distY;
@@ -699,29 +710,29 @@ PIF_DEF void PIF_imageDrawLine(PIF_Image *this, int x1, int y1, int x2, int y2,
 	}
 }
 
-PIF_DEF void PIF_imageDrawRect(PIF_Image *this, PIF_Rect *rect, int n, uint8_t color) {
-	PIF_assert(this != NULL);
+PIF_DEF void PIF_imageDrawRect(PIF_Image *self, PIF_Rect *rect, int n, uint8_t color) {
+	PIF_assert(self != NULL);
 
-	if (color == PIF_TRANSPARENT)
+	if (color == PIF_TRANSPARENT && self->skipTransparent)
 		return;
 
-	PIF_Rect rect_ = {0, 0, this->w, this->h};
+	PIF_Rect rect_ = {0, 0, self->w, self->h};
 	if (rect == NULL)
 		rect = &rect_;
 
-	PIF_imageDrawLine(this, rect->x, rect->y, rect->x + rect->w - 1, rect->y, n, color);
-	PIF_imageDrawLine(this, rect->x, rect->y + rect->h, rect->x, rect->y + 1, n, color);
-	PIF_imageDrawLine(this, rect->x + rect->w, rect->y,
-	                  rect->x + rect->w, rect->y + rect->h - 1, n, color);
-	PIF_imageDrawLine(this, rect->x + rect->w, rect->y + rect->h,
-	                  rect->x + 1, rect->y + rect->h, n, color);
+	PIF_imageDrawLine(self, rect->x, rect->y, rect->x + rect->w - 2, rect->y, n, color);
+	PIF_imageDrawLine(self, rect->x, rect->y + rect->h - 1, rect->x, rect->y + 1, n, color);
+	PIF_imageDrawLine(self, rect->x + rect->w - 1, rect->y,
+	                  rect->x + rect->w - 1, rect->y + rect->h - 2, n, color);
+	PIF_imageDrawLine(self, rect->x + rect->w - 1, rect->y + rect->h - 1,
+	                  rect->x + 1, rect->y + rect->h - 1, n, color);
 }
 
 /* Midpoint circle algorithm */
-PIF_DEF void PIF_imageDrawCircle(PIF_Image *this, int cx, int cy, int r, int n, uint8_t color) {
-	PIF_assert(this != NULL);
+PIF_DEF void PIF_imageDrawCircle(PIF_Image *self, int cx, int cy, int r, int n, uint8_t color) {
+	PIF_assert(self != NULL);
 
-	if (color == PIF_TRANSPARENT)
+	if (color == PIF_TRANSPARENT && self->skipTransparent)
 		return;
 
 	int x   = r - 1;
@@ -736,14 +747,15 @@ PIF_DEF void PIF_imageDrawCircle(PIF_Image *this, int cx, int cy, int r, int n, 
 			draw = !draw;
 
 		if (draw) {
-			PIF_imageDrawPoint(this, cx + x, cy + y, color);
-			PIF_imageDrawPoint(this, cx + y, cy + x, color);
-			PIF_imageDrawPoint(this, cx - y, cy + x, color);
-			PIF_imageDrawPoint(this, cx - x, cy + y, color);
-			PIF_imageDrawPoint(this, cx - x, cy - y, color);
-			PIF_imageDrawPoint(this, cx - y, cy - x, color);
-			PIF_imageDrawPoint(this, cx + y, cy - x, color);
-			PIF_imageDrawPoint(this, cx + x, cy - y, color);
+			/* TODO: Fix overdrawing pixels */
+			PIF_imageDrawPoint(self, cx + x, cy + y, color);
+			PIF_imageDrawPoint(self, cx + y, cy + x, color);
+			PIF_imageDrawPoint(self, cx - y, cy + x, color);
+			PIF_imageDrawPoint(self, cx - x, cy + y, color);
+			PIF_imageDrawPoint(self, cx - x, cy - y, color);
+			PIF_imageDrawPoint(self, cx - y, cy - x, color);
+			PIF_imageDrawPoint(self, cx + y, cy - x, color);
+			PIF_imageDrawPoint(self, cx + x, cy - y, color);
 		}
 
 		if (err <= 0) {
@@ -760,72 +772,72 @@ PIF_DEF void PIF_imageDrawCircle(PIF_Image *this, int cx, int cy, int r, int n, 
 	}
 }
 
-PIF_DEF void PIF_imageDrawTriangle(PIF_Image *this, int x1, int y1, int x2, int y2,
+PIF_DEF void PIF_imageDrawTriangle(PIF_Image *self, int x1, int y1, int x2, int y2,
                                    int x3, int y3, int n, uint8_t color) {
-	PIF_assert(this != NULL);
+	PIF_assert(self != NULL);
 
-	if (color == PIF_TRANSPARENT)
+	if (color == PIF_TRANSPARENT && self->skipTransparent)
 		return;
 
-	PIF_imageDrawLine(this, x1, y1, x2, y2, n, color);
-	PIF_imageDrawLine(this, x2, y2, x3, y3, n, color);
-	PIF_imageDrawLine(this, x3, y3, x1, y1, n, color);
+	PIF_imageDrawLine(self, x1, y1, x2, y2, n, color);
+	PIF_imageDrawLine(self, x2, y2, x3, y3, n, color);
+	PIF_imageDrawLine(self, x3, y3, x1, y1, n, color);
 }
 
-PIF_DEF void PIF_imageDrawTransformRect(PIF_Image *this, PIF_Rect *rect, int n, uint8_t color,
+PIF_DEF void PIF_imageDrawTransformRect(PIF_Image *self, PIF_Rect *rect, int n, uint8_t color,
                                         float mat[2][2], int cx, int cy) {
-	PIF_assert(this != NULL);
+	PIF_assert(self != NULL);
 
-	if (color == PIF_TRANSPARENT)
+	if (color == PIF_TRANSPARENT && self->skipTransparent)
 		return;
 
-	PIF_Rect rect_ = {0, 0, this->w, this->h};
+	PIF_Rect rect_ = {0, 0, self->w, self->h};
 	if (rect == NULL)
 		rect = &rect_;
 
 	int ps[4][2];
 	PIF_transformRect(rect, mat, cx, cy, ps);
 
-	PIF_imageDrawLine(this, ps[0][0], ps[0][1], ps[1][0], ps[1][1], n, color);
-	PIF_imageDrawLine(this, ps[1][0], ps[1][1], ps[2][0], ps[2][1], n, color);
-	PIF_imageDrawLine(this, ps[2][0], ps[2][1], ps[3][0], ps[3][1], n, color);
-	PIF_imageDrawLine(this, ps[3][0], ps[3][1], ps[0][0], ps[0][1], n, color);
+	PIF_imageDrawLine(self, ps[0][0], ps[0][1], ps[1][0], ps[1][1], n, color);
+	PIF_imageDrawLine(self, ps[1][0], ps[1][1], ps[2][0], ps[2][1], n, color);
+	PIF_imageDrawLine(self, ps[2][0], ps[2][1], ps[3][0], ps[3][1], n, color);
+	PIF_imageDrawLine(self, ps[3][0], ps[3][1], ps[0][0], ps[0][1], n, color);
 }
 
-PIF_DEF void PIF_imageDrawRotateRect(PIF_Image *this, PIF_Rect *rect, int n, uint8_t color,
+PIF_DEF void PIF_imageDrawRotateRect(PIF_Image *self, PIF_Rect *rect, int n, uint8_t color,
                                      float angle, int cx, int cy) {
 	float rotMat[2][2];
 	PIF_makeRotationMatrix2x2(angle, rotMat);
-	PIF_imageDrawTransformRect(this, rect, n, color, rotMat, cx, cy);
+	PIF_imageDrawTransformRect(self, rect, n, color, rotMat, cx, cy);
 }
 
-PIF_DEF void PIF_imageFillRect(PIF_Image *this, PIF_Rect *rect, uint8_t color) {
-	PIF_assert(this != NULL);
+PIF_DEF void PIF_imageFillRect(PIF_Image *self, PIF_Rect *rect, uint8_t color) {
+	PIF_assert(self != NULL);
 
-	if (color == PIF_TRANSPARENT)
+	if (color == PIF_TRANSPARENT && self->skipTransparent)
 		return;
 
-	PIF_Rect rect_ = {0, 0, this->w, this->h};
+	PIF_Rect rect_ = {0, 0, self->w, self->h};
 	if (rect == NULL)
 		rect = &rect_;
 
 	for (int y = rect->y; y < rect->y + rect->h; ++ y) {
 		if (y <  0)       continue;
-		if (y >= this->h) break;
+		if (y >= self->h) break;
 
 		for (int x = rect->x; x < rect->x + rect->w; ++ x) {
 			if (x <  0)       continue;
-			if (x >= this->w) break;
+			if (x >= self->w) break;
 
-			PIF_imageDrawPoint(this, x, y, color);
+			PIF_imageDrawPoint(self, x, y, color);
 		}
 	}
 }
 
-PIF_DEF void PIF_imageFillCircle(PIF_Image *this, int cx, int cy, int r, uint8_t color) {
-	PIF_assert(this != NULL);
+PIF_DEF void PIF_imageFillCircle(PIF_Image *self, int cx, int cy, int r, uint8_t color) {
+	PIF_assert(self != NULL);
 
-	if (color == PIF_TRANSPARENT)
+	if (color == PIF_TRANSPARENT && self->skipTransparent)
 		return;
 
 	int d  = r * 2;
@@ -834,22 +846,22 @@ PIF_DEF void PIF_imageFillCircle(PIF_Image *this, int cx, int cy, int r, uint8_t
 		int dy    = r - y;
 		int destY = cy + dy;
 		if (destY <  0)       break;
-		if (destY >= this->h) continue;
+		if (destY >= self->h) continue;
 
 		for (int x = 0; x < d; ++ x) {
 			int dx    = r - x;
 			int destX = cx + dx;
 			if (destX <  0)       break;
-			if (destX >= this->w) continue;
+			if (destX >= self->w) continue;
 
 			int dy = r - y;
 			if (dx * dx + dy * dy < rr)
-				PIF_imageDrawPoint(this, destX, destY, color);
+				PIF_imageDrawPoint(self, destX, destY, color);
 		}
 	}
 }
 
-static void PIF_imageFillFlatSideTriangle(PIF_Image *this, int x1, int y1, int x2, int y2,
+static void PIF_imageFillFlatSideTriangle(PIF_Image *self, int x1, int y1, int x2, int y2,
                                           int x3, uint8_t color, bool skipLast) {
 	if (x2 > x3)
 		PIF_swap(x2, x3);
@@ -874,7 +886,7 @@ static void PIF_imageFillFlatSideTriangle(PIF_Image *this, int x1, int y1, int x
 	/* skipLast is required to avoid an overlap with the 2 flat side triangles used to render a
 	   normal triangle */
 	for (int y = y1; y != yStop; y += yStep) {
-		if ((yStep > 0 && y >= this->h) || (yStep < 0 && y < 0))
+		if ((yStep > 0 && y >= self->h) || (yStep < 0 && y < 0))
 			break;
 
 		/* Fix gaps */
@@ -883,8 +895,8 @@ static void PIF_imageFillFlatSideTriangle(PIF_Image *this, int x1, int y1, int x
 
 		/* Scanline */
 		if (y >= 0) {
-			for (int x = PIF_max(round(xStart), 0); x <= PIF_min(round(xEnd), this->w); ++ x)
-				PIF_imageDrawPoint(this, x, y, color);
+			for (int x = PIF_max(round(xStart), 0); x <= PIF_min(round(xEnd), self->w); ++ x)
+				PIF_imageDrawPoint(self, x, y, color);
 		}
 
 		/* Step */
@@ -896,9 +908,9 @@ static void PIF_imageFillFlatSideTriangle(PIF_Image *this, int x1, int y1, int x
 }
 
 /* TODO: Make triangle filling more precise? */
-PIF_DEF void PIF_imageFillTriangle(PIF_Image *this, int x1, int y1, int x2, int y2,
+PIF_DEF void PIF_imageFillTriangle(PIF_Image *self, int x1, int y1, int x2, int y2,
                                    int x3, int y3, uint8_t color) {
-	PIF_assert(this != NULL);
+	PIF_assert(self != NULL);
 
 	/* Sort points */
 	if (y1 > y3) {
@@ -915,41 +927,41 @@ PIF_DEF void PIF_imageFillTriangle(PIF_Image *this, int x1, int y1, int x2, int 
 	}
 
 	/* Is it a flat-sided triangle? */
-	if      (y2 == y3) PIF_imageFillFlatSideTriangle(this, x1, y1, x2, y2, x3, color, false);
-	else if (y1 == y2) PIF_imageFillFlatSideTriangle(this, x3, y3, x1, y1, x2, color, false);
+	if      (y2 == y3) PIF_imageFillFlatSideTriangle(self, x1, y1, x2, y2, x3, color, false);
+	else if (y1 == y2) PIF_imageFillFlatSideTriangle(self, x3, y3, x1, y1, x2, color, false);
 	else {
 		/* Otherwise split the triangle into 2 flat sided triangles */
 		float slope = (float)(x3 - x1) / (y3 - y1);
 		int   x4    = round((float)x3 - slope * (y3 - y2));
 
-		PIF_imageFillFlatSideTriangle(this, x1, y1, x2, y2, x4, color, false);
-		PIF_imageFillFlatSideTriangle(this, x3, y3, x2, y2, x4, color, true);
+		PIF_imageFillFlatSideTriangle(self, x1, y1, x2, y2, x4, color, false);
+		PIF_imageFillFlatSideTriangle(self, x3, y3, x2, y2, x4, color, true);
 	}
 }
 
-PIF_DEF void PIF_imageFillTransformRect(PIF_Image *this, PIF_Rect *rect, uint8_t color,
+PIF_DEF void PIF_imageFillTransformRect(PIF_Image *self, PIF_Rect *rect, uint8_t color,
                                         float mat[2][2], int cx, int cy) {
-	PIF_assert(this != NULL);
+	PIF_assert(self != NULL);
 
-	if (color == PIF_TRANSPARENT)
+	if (color == PIF_TRANSPARENT && self->skipTransparent)
 		return;
 
-	PIF_Rect rect_ = {0, 0, this->w, this->h};
+	PIF_Rect rect_ = {0, 0, self->w, self->h};
 	if (rect == NULL)
 		rect = &rect_;
 
 	int ps[4][2];
 	PIF_transformRect(rect, mat, cx, cy, ps);
 
-	PIF_imageFillTriangle(this, ps[0][0], ps[0][1], ps[1][0], ps[1][1], ps[3][0], ps[3][1], color);
-	PIF_imageFillTriangle(this, ps[2][0], ps[2][1], ps[1][0], ps[1][1], ps[3][0], ps[3][1], color);
+	PIF_imageFillTriangle(self, ps[0][0], ps[0][1], ps[1][0], ps[1][1], ps[3][0], ps[3][1], color);
+	PIF_imageFillTriangle(self, ps[2][0], ps[2][1], ps[1][0], ps[1][1], ps[3][0], ps[3][1], color);
 }
 
-PIF_DEF void PIF_imageFillRotateRect(PIF_Image *this, PIF_Rect *rect, uint8_t color,
+PIF_DEF void PIF_imageFillRotateRect(PIF_Image *self, PIF_Rect *rect, uint8_t color,
                                      float angle, int cx, int cy) {
 	float rotMat[2][2];
 	PIF_makeRotationMatrix2x2(angle, rotMat);
-	PIF_imageFillTransformRect(this, rect, color, rotMat, cx, cy);
+	PIF_imageFillTransformRect(self, rect, color, rotMat, cx, cy);
 }
 
 PIF_DEF PIF_Font *PIF_fontNew(int chHeight, uint8_t *chWidths, PIF_Image *sheet,
@@ -957,8 +969,8 @@ PIF_DEF PIF_Font *PIF_fontNew(int chHeight, uint8_t *chWidths, PIF_Image *sheet,
 	PIF_assert(chWidths != NULL);
 	PIF_assert(sheet    != NULL);
 
-	PIF_Font *this = (PIF_Font*)PIF_alloc(sizeof(PIF_Font));
-	PIF_checkAlloc(this);
+	PIF_Font *self = (PIF_Font*)PIF_alloc(sizeof(PIF_Font));
+	PIF_checkAlloc(self);
 
 	/* Calculate character positions */
 	int x = 0, y = 0;
@@ -969,18 +981,18 @@ PIF_DEF PIF_Font *PIF_fontNew(int chHeight, uint8_t *chWidths, PIF_Image *sheet,
 			y += chHeight;
 		}
 
-		this->chInfo[i].x = x;
-		this->chInfo[i].y = y;
-		this->chInfo[i].w = w;
+		self->chInfo[i].x = x;
+		self->chInfo[i].y = y;
+		self->chInfo[i].w = w;
 		x += w;
 	}
 
-	this->chHeight    = chHeight;
-	this->sheet       = sheet;
-	this->chSpacing   = chSpacing;
-	this->lineSpacing = lineSpacing;
-	this->scale       = 1;
-	return this;
+	self->chHeight    = chHeight;
+	self->sheet       = sheet;
+	self->chSpacing   = chSpacing;
+	self->lineSpacing = lineSpacing;
+	self->scale       = 1;
+	return self;
 }
 
 PIF_DEF PIF_Font *PIF_fontRead(FILE *file, const char **err) {
@@ -989,29 +1001,29 @@ PIF_DEF PIF_Font *PIF_fontRead(FILE *file, const char **err) {
 	/* Verify magic bytes */
 	char magic[sizeof(PIF_FONT_MAGIC) - 1];
 	if (fread(magic, 1, sizeof(magic), file) != sizeof(magic))
-		return PIF_error(err, "Failed to read magic bytes");
+		return (PIF_Font*)PIF_error(err, "Failed to read magic bytes");
 
 	if (strncmp(magic, PIF_FONT_MAGIC, sizeof(magic)) != 0)
-		return PIF_error(err, "File is not a PIF font");
+		return (PIF_Font*)PIF_error(err, "File is not a PIF font");
 
 	/* Read spacing */
 	int chSpacing = fgetc(file);
 	if (chSpacing == EOF)
-		return PIF_error(err, "Failed to read PIF font character spacing");
+		return (PIF_Font*)PIF_error(err, "Failed to read PIF font character spacing");
 
 	int lineSpacing = fgetc(file);
 	if (lineSpacing == EOF)
-		return PIF_error(err, "Failed to read PIF font line spacing");
+		return (PIF_Font*)PIF_error(err, "Failed to read PIF font line spacing");
 
 	/* Read character height */
 	int chHeight = fgetc(file);
 	if (chHeight == EOF)
-		return PIF_error(err, "Failed to read PIF font character height");
+		return (PIF_Font*)PIF_error(err, "Failed to read PIF font character height");
 
 	/* Read character widths */
 	uint8_t chWidths[256];
 	if (fread(chWidths, 1, sizeof(chWidths), file) != sizeof(chWidths))
-		return PIF_error(err, "Failed to read PIF font character widths");
+		return (PIF_Font*)PIF_error(err, "Failed to read PIF font character widths");
 
 	/* Read sheet */
 	PIF_Image *sheet = PIF_imageRead(file, err);
@@ -1019,9 +1031,9 @@ PIF_DEF PIF_Font *PIF_fontRead(FILE *file, const char **err) {
 		return NULL;
 
 	/* Create font */
-	PIF_Font *this = PIF_fontNew(chHeight, chWidths, sheet, chSpacing, lineSpacing);
-	PIF_assert(this != NULL);
-	return this;
+	PIF_Font *self = PIF_fontNew(chHeight, chWidths, sheet, chSpacing, lineSpacing);
+	PIF_assert(self != NULL);
+	return self;
 }
 
 PIF_DEF PIF_Font *PIF_fontLoad(const char *path, const char **err) {
@@ -1029,80 +1041,80 @@ PIF_DEF PIF_Font *PIF_fontLoad(const char *path, const char **err) {
 
 	FILE *file = fopen(path, "rb");
 	if (file == NULL)
-		return PIF_error(err, "Could not open file");
+		return (PIF_Font*)PIF_error(err, "Could not open file");
 
-	PIF_Font *this = PIF_fontRead(file, err);
+	PIF_Font *self = PIF_fontRead(file, err);
 
 	fclose(file);
-	return this;
+	return self;
 }
 
-PIF_DEF void PIF_fontWrite(PIF_Font *this, FILE *file) {
-	PIF_assert(this        != NULL);
+PIF_DEF void PIF_fontWrite(PIF_Font *self, FILE *file) {
+	PIF_assert(self        != NULL);
 	PIF_assert(file        != NULL);
-	PIF_assert(this->sheet != NULL);
+	PIF_assert(self->sheet != NULL);
 
 	/* Write magic bytes */
 	fwrite(PIF_FONT_MAGIC, 1, sizeof(PIF_FONT_MAGIC) - 1, file);
 
 	/* Write spacing */
-	fputc(this->chSpacing,   file);
-	fputc(this->lineSpacing, file);
+	fputc(self->chSpacing,   file);
+	fputc(self->lineSpacing, file);
 
 	/* Write character height */
-	fputc(this->chHeight, file);
+	fputc(self->chHeight, file);
 
 	/* Write character widths */
 	for (int i = 0; i < 256; ++ i)
-		fputc(this->chInfo[i].w, file);
+		fputc(self->chInfo[i].w, file);
 
 	/* Write sheet */
-	PIF_imageWrite(this->sheet, file);
+	PIF_imageWrite(self->sheet, file);
 }
 
-PIF_DEF int PIF_fontSave(PIF_Font *this, const char *path) {
-	PIF_assert(this != NULL);
+PIF_DEF int PIF_fontSave(PIF_Font *self, const char *path) {
+	PIF_assert(self != NULL);
 	PIF_assert(path != NULL);
 
 	FILE *file = fopen(path, "wb");
 	if (file == NULL)
 		return -1;
 
-	PIF_fontWrite(this, file);
+	PIF_fontWrite(self, file);
 
 	fclose(file);
 	return 0;
 }
 
-PIF_DEF void PIF_fontFree(PIF_Font *this) {
-	PIF_assert(this != NULL);
+PIF_DEF void PIF_fontFree(PIF_Font *self) {
+	PIF_assert(self != NULL);
 
-	PIF_imageFree(this->sheet);
-	PIF_free(this);
+	PIF_imageFree(self->sheet);
+	PIF_free(self);
 }
 
-PIF_DEF void PIF_fontSetSpacing(PIF_Font *this, uint8_t chSpacing, uint8_t lineSpacing) {
-	PIF_assert(this != NULL);
+PIF_DEF void PIF_fontSetSpacing(PIF_Font *self, uint8_t chSpacing, uint8_t lineSpacing) {
+	PIF_assert(self != NULL);
 
-	this->chSpacing   = chSpacing;
-	this->lineSpacing = lineSpacing;
+	self->chSpacing   = chSpacing;
+	self->lineSpacing = lineSpacing;
 }
 
-PIF_DEF void PIF_fontSetScale(PIF_Font *this, float scale) {
-	PIF_assert(this != NULL);
+PIF_DEF void PIF_fontSetScale(PIF_Font *self, float scale) {
+	PIF_assert(self != NULL);
 
-	this->scale = scale;
+	self->scale = scale;
 }
 
-PIF_DEF void PIF_fontCharSize(PIF_Font *this, char ch, int *w, int *h) {
-	PIF_assert(this != NULL);
+PIF_DEF void PIF_fontCharSize(PIF_Font *self, char ch, int *w, int *h) {
+	PIF_assert(self != NULL);
 
-	if (w != NULL) *w = round((float)this->chInfo[(int)ch].w * this->scale);
-	if (h != NULL) *h = round((float)this->chHeight          * this->scale);
+	if (w != NULL) *w = round((float)self->chInfo[(int)ch].w * self->scale);
+	if (h != NULL) *h = round((float)self->chHeight          * self->scale);
 }
 
-PIF_DEF void PIF_fontTextSize(PIF_Font *this, const char *text, int *w, int *h) {
-	PIF_assert(this != NULL);
+PIF_DEF void PIF_fontTextSize(PIF_Font *self, const char *text, int *w, int *h) {
+	PIF_assert(self != NULL);
 	PIF_assert(text != NULL);
 
 	int w_, h_;
@@ -1110,41 +1122,41 @@ PIF_DEF void PIF_fontTextSize(PIF_Font *this, const char *text, int *w, int *h) 
 	if (h == NULL) h = &h_;
 
 	*w = 0;
-	*h = round((float)this->chHeight * this->scale);
+	*h = round((float)self->chHeight * self->scale);
 	for (int rowWidth = 0; *text != '\0'; ++ text) {
 		if (*text == '\n') {
 			rowWidth = 0;
-			*h += round((float)(this->chHeight + this->lineSpacing) * this->scale);
+			*h += round((float)(self->chHeight + self->lineSpacing) * self->scale);
 			continue;
 		}
 
-		int space = rowWidth > 0? this->chSpacing : 0;
-		rowWidth += round((float)(this->chInfo[(int)*text].w + space) * this->scale);
+		int space = rowWidth > 0? self->chSpacing : 0;
+		rowWidth += round((float)(self->chInfo[(int)*text].w + space) * self->scale);
 		if (rowWidth > *w)
 			*w = rowWidth;
 	}
 }
 
-PIF_DEF void PIF_fontRenderChar(PIF_Font *this, char ch, PIF_Image *img,
+PIF_DEF void PIF_fontRenderChar(PIF_Font *self, char ch, PIF_Image *img,
                                 int xStart, int yStart, uint8_t color) {
-	PIF_assert(this != NULL);
+	PIF_assert(self != NULL);
 	PIF_assert(img  != NULL);
 	PIF_assert(ch   != '\0');
 
-	PIF_FontCharInfo chInfo = this->chInfo[(int)ch];
+	PIF_FontCharInfo chInfo = self->chInfo[(int)ch];
 	if (chInfo.w == 0)
 		return;
 
-	for (int y = 0; y < round((float)this->chHeight * this->scale); ++ y) {
-		int srcY  = chInfo.y + (float)y / this->scale;
+	for (int y = 0; y < round((float)self->chHeight * self->scale); ++ y) {
+		int srcY  = chInfo.y + (float)y / self->scale;
 		int destY = yStart + y;
 		if (destY <  0)      continue;
 		if (destY >= img->h) break;
 
-		for (int x = 0; x < round((float)chInfo.w * this->scale); ++ x) {
-			int srcX = chInfo.x + (float)x / this->scale;
+		for (int x = 0; x < round((float)chInfo.w * self->scale); ++ x) {
+			int srcX = chInfo.x + (float)x / self->scale;
 
-			uint8_t *pixel = PIF_imageAt(this->sheet, srcX, srcY);
+			uint8_t *pixel = PIF_imageAt(self->sheet, srcX, srcY);
 			PIF_assert(pixel != NULL);
 
 			if (*pixel == PIF_TRANSPARENT)
@@ -1159,21 +1171,21 @@ PIF_DEF void PIF_fontRenderChar(PIF_Font *this, char ch, PIF_Image *img,
 	}
 }
 
-PIF_DEF void PIF_fontRenderText(PIF_Font *this, const char *text, PIF_Image *img,
+PIF_DEF void PIF_fontRenderText(PIF_Font *self, const char *text, PIF_Image *img,
                                 int xStart, int yStart, uint8_t color) {
-	PIF_assert(this != NULL);
+	PIF_assert(self != NULL);
 	PIF_assert(text != NULL);
 	PIF_assert(img  != NULL);
 
 	for (int x = xStart, y = yStart; *text != '\0'; ++ text) {
 		if (*text == '\n') {
 			x  = xStart;
-			y += round((float)(this->chHeight + this->lineSpacing) * this->scale);
+			y += round((float)(self->chHeight + self->lineSpacing) * self->scale);
 			continue;
 		}
 
-		PIF_fontRenderChar(this, *text, img, x, y, color);
-		x += round((float)(this->chInfo[(int)*text].w + this->chSpacing) * this->scale);
+		PIF_fontRenderChar(self, *text, img, x, y, color);
+		x += round((float)(self->chInfo[(int)*text].w + self->chSpacing) * self->scale);
 	}
 }
 
@@ -1188,7 +1200,7 @@ uint8_t PIF_defaultFontWidths[256] = {
 	2, 3, 3, 3, 3, 3, 3, 4, 3, 1, 3, 3, 3, 5, 4, 3, 3, 3, 3, 3, 3, 3, 3, 5, 3, 3, 3, 3, 1, 3, 4,
 };
 
-/* Yes, i wrote all of this out manually (not joking) */
+/* Yes, i wrote all of self out manually (not joking) */
 uint8_t PIF_defaultFontPixels[PIF_DEFAULT_FONT_H][PIF_DEFAULT_FONT_W] = {
 	{0, 0, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 0, 1, 0, 1, 0, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0, 0},
 	{0, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 0, 1, 0, 1, 1, 0, 0, 1, 0, 1, 0, 0, 0},
@@ -1277,6 +1289,7 @@ PIF_DEF PIF_Font *PIF_fontNewDefault(void) {
 
 #undef PIF_error
 #undef PIF_checkAlloc
-#undef PIF_swap
-#undef PIF_max
-#undef PIF_min
+
+#ifdef __cplusplus
+}
+#endif

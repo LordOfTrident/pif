@@ -23,7 +23,7 @@
 						"type": "task",
 						"title": "Simple drawing program (canvas resizing)",
 						"desc": null,
-						"done": false
+						"done": true
 					}
 				]
 			},
@@ -89,12 +89,6 @@
 		"children": [
 			{
 				"type": "task",
-				"title": "Triangle rotating/transforming draw/fill functions",
-				"desc": null,
-				"done": false
-			},
-			{
-				"type": "task",
 				"title": "Palette/image loading",
 				"desc": null,
 				"done": true
@@ -152,6 +146,30 @@
 				"title": "Blit rotating/transforming functions",
 				"desc": null,
 				"done": true
+			},
+			{
+				"type": "task",
+				"title": "Triangle rotating/transforming draw/fill functions",
+				"desc": null,
+				"done": false
+			}
+		]
+	},
+	{
+		"type": "group",
+		"title": "Bugs to fix",
+		"children": [
+			{
+				"type": "task",
+				"title": "Pixel overdrawing (in PIF_imageDrawCircle and others)",
+				"desc": null,
+				"done": false
+			},
+			{
+				"type": "task",
+				"title": "Imprecise dashed/dotted line drawing (in PIF_imageDrawCircle)",
+				"desc": null,
+				"done": false
 			}
 		]
 	}

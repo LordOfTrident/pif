@@ -1,6 +1,6 @@
-#include <math.h> /* tan, cos, sin, sqrt, pow, fabs, round */
+#include <math.h> /* tan, cos, sin, sqrt, pow, round */
 
-#include "shared.inc"
+#include <demo.c>
 
 #define TITLE "Dots 3D | Escape to quit"
 #define SCR_W 700
@@ -29,7 +29,7 @@ typedef struct {
 } Dot;
 
 static struct {
-	Demo d;
+	DemoData d;
 
 	PIF_Font *font;
 	float     projMat[3][3];

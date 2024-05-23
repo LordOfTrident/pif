@@ -78,9 +78,10 @@ for every palettized software rendered game I make in the future. And so the ide
 
 ## Demos
 <div align="center">
-	<img src="./res/demo2.gif" width="50%">
-	<img src="./res/demo1.gif" width="40%">
-	<img src="./res/demo3.gif" width="60%">
+	<img src="./res/demo2.gif" width="47%">
+	<img src="./res/demo4.gif" width="43%">
+	<img src="./res/demo1.gif" width="33%">
+	<img src="./res/demo3.gif" width="57%">
 </div>
 
 ### Pre-requisites

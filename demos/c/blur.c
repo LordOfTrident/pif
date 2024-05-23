@@ -1,7 +1,7 @@
 #include <time.h> /* time */
 #include <math.h> /* sin */
 
-#include "shared.inc"
+#include <demo.c>
 
 #define TITLE "Blur | Escape to quit, space to pause"
 #define SCR_W 704
@@ -14,7 +14,7 @@ typedef struct {
 } Blur;
 
 static struct {
-	Demo d;
+	DemoData d;
 
 	PIF_Font *font;
 	unsigned  seed;

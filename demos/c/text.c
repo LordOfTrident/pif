@@ -1,4 +1,4 @@
-#include "shared.inc"
+#include <demo.c>
 
 #define TITLE "Text | Escape to quit"
 #define SCR_W 704
@@ -6,7 +6,7 @@
 #define SCALE 4
 
 static struct {
-	Demo d;
+	DemoData d;
 
 	PIF_Font *font;
 } demo;

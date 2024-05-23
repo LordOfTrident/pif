@@ -1,12 +1,11 @@
 SRC  = $(wildcard *.c)
-DEPS = $(wildcard ../../*.h) $(wildcard ../../*.c) $(wildcard *.inc) $(wildcard ../*.inc)
+DEPS = $(wildcard ../../*.h) $(wildcard ../../*.c) $(wildcard ../*.c)
 OUT  = $(basename $(SRC))
-
-build: $(OUT)
 
 CSTD   = c11
 CLIBS  = -lm -lSDL2
-CFLAGS = -O3 -std=$(CSTD) -Wall -Wextra -Werror -pedantic -Wno-deprecated-declarations -g -I../../
+CFLAGS = -O3 -g -std=$(CSTD) -Wall -Wextra -Werror -pedantic -Wno-deprecated-declarations \
+         -I../../ -I../
 
 build: $(OUT)
 

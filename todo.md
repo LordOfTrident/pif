@@ -1,9 +1,9 @@
-# TODO (67% done)
-- (`43%`) **Demos**
-	- (`0%`) **C++**
+# TODO (71% done)
+- (`60%`) **Demos**
+	- (`33%`) **C++**
 		- [ ] 3D .obj loader
 		- [ ] Mode 7 infinite forest demo
-		- [ ] Simple drawing program (canvas resizing)
+		- [X] Simple drawing program (canvas resizing)
 	- (`87%`) **C**
 		- [X] Palette loading and displaying program
 		- [X] Triangles demo
@@ -13,8 +13,7 @@
 		- [X] Custom shader demo (blur)
 		- [X] Text rendering demo
 		- [ ] Barycentric rainbow triangle demo
-- (`90%`) **Features**
-	- [ ] Triangle rotating/transforming draw/fill functions
+- (`83%`) **Features**
 	- [X] Palette/image loading
 	- [X] Rectangle/line draw/fill functions
 	- [X] Circle draw/fill functions
@@ -25,3 +24,5 @@
 	- [X] Shaders and built-in blend shader
 	- [X] Text rendering (font files)
 	- [X] Blit rotating/transforming functions
+	- [ ] Triangle rotating/transforming draw/fill functions
+	- [ ] Fix overdrawing pixels (PIF_imageDrawCircle and others)

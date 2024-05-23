@@ -1,7 +1,7 @@
 #include <time.h> /* time */
-#include <math.h> /* round, sin, cos, sqrt, pow, fabs */
+#include <math.h> /* round, sin, cos, sqrt, pow */
 
-#include "shared.inc"
+#include <demo.c>
 
 #define TITLE "Triangles | Escape to quit"
 #define SCR_W 600
@@ -19,7 +19,7 @@ typedef struct {
 } Triangle;
 
 static struct {
-	Demo d;
+	DemoData d;
 
 	int dragging;
 
@@ -162,8 +162,8 @@ static void input(void) {
 		case SDL_MOUSEBUTTONDOWN:
 			/* Find a point touching the mouse */
 			for (int i = 0; i < demo.psCount; ++ i) {
-				float dist = fabs(sqrt(pow(demo.ps[i].x - demo.d.mouseX, 2) +
-				                       pow(demo.ps[i].y - demo.d.mouseY, 2)));
+				float dist = sqrt(pow(demo.ps[i].x - demo.d.mouseX, 2) +
+				                  pow(demo.ps[i].y - demo.d.mouseY, 2));
 				if (round(dist) <= POINT_BUTTON_SIZE) {
 					demo.dragging = i;
 					break;

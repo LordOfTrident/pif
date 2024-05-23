@@ -1,6 +1,10 @@
 #ifndef PIF_H_HEADER_GUARD
 #define PIF_H_HEADER_GUARD
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdio.h>   /* fopen, fclose, FILE, EOF, fprintf, stderr, fwrite, fread */
 #include <stdlib.h>  /* malloc, realloc, free, abort */
 #include <string.h>  /* memset, memcpy, strncpy */
@@ -59,8 +63,8 @@ typedef struct {
 
 PIF_DEF int      PIF_rgbDiff(PIF_Rgb a, PIF_Rgb b);
 PIF_DEF PIF_Rgb  PIF_rgbLerp(PIF_Rgb a, PIF_Rgb b, float t);
-PIF_DEF uint32_t PIF_rgbToPixelRgba32(PIF_Rgb this);
-PIF_DEF uint32_t PIF_rgbToPixelAbgr32(PIF_Rgb this);
+PIF_DEF uint32_t PIF_rgbToPixelRgba32(PIF_Rgb self);
+PIF_DEF uint32_t PIF_rgbToPixelAbgr32(PIF_Rgb self);
 PIF_DEF PIF_Rgb  PIF_rgbFromPixelRgba32(uint32_t pixel);
 PIF_DEF PIF_Rgb  PIF_rgbFromPixelAbgr32(uint32_t pixel);
 
@@ -72,12 +76,12 @@ typedef struct {
 PIF_DEF PIF_Palette *PIF_paletteNew  (int   size);
 PIF_DEF PIF_Palette *PIF_paletteRead (FILE *file,        const char **err);
 PIF_DEF PIF_Palette *PIF_paletteLoad (const char  *path, const char **err);
-PIF_DEF void         PIF_paletteWrite(PIF_Palette *this, FILE        *file);
-PIF_DEF int          PIF_paletteSave (PIF_Palette *this, const char  *path);
-PIF_DEF void         PIF_paletteFree (PIF_Palette *this);
+PIF_DEF void         PIF_paletteWrite(PIF_Palette *self, FILE        *file);
+PIF_DEF int          PIF_paletteSave (PIF_Palette *self, const char  *path);
+PIF_DEF void         PIF_paletteFree (PIF_Palette *self);
 
-PIF_DEF uint8_t    PIF_paletteClosest(PIF_Palette *this, PIF_Rgb rgb);
-PIF_DEF PIF_Image *PIF_paletteCreateColormap(PIF_Palette *this, int shades, float t);
+PIF_DEF uint8_t    PIF_paletteClosest(PIF_Palette *self, PIF_Rgb rgb);
+PIF_DEF PIF_Image *PIF_paletteCreateColormap(PIF_Palette *self, int shades, float t);
 
 typedef void (*PIF_Shader)(int, int, uint8_t*, uint8_t, PIF_Image*);
 
@@ -99,6 +103,7 @@ PIF_DEF void PIF_exCopyShader(int x, int y, uint8_t *pixel, uint8_t color, PIF_I
 struct PIF_Image {
 	PIF_Shader shader;
 	void      *data;
+	bool       skipTransparent;
 
 	int     w, h, size;
 	uint8_t buf[1];
@@ -107,44 +112,47 @@ struct PIF_Image {
 PIF_DEF PIF_Image *PIF_imageNew  (int w, int h);
 PIF_DEF PIF_Image *PIF_imageRead (FILE       *file, const char **err);
 PIF_DEF PIF_Image *PIF_imageLoad (const char *path, const char **err);
-PIF_DEF void       PIF_imageWrite(PIF_Image  *this, FILE        *file);
-PIF_DEF int        PIF_imageSave (PIF_Image  *this, const char  *path);
-PIF_DEF void       PIF_imageFree (PIF_Image  *this);
+PIF_DEF void       PIF_imageWrite(PIF_Image  *self, FILE        *file);
+PIF_DEF int        PIF_imageSave (PIF_Image  *self, const char  *path);
+PIF_DEF void       PIF_imageFree (PIF_Image  *self);
 
-PIF_DEF void       PIF_imageSetShader     (PIF_Image *this, PIF_Shader shader, void *data);
-PIF_DEF void       PIF_imageConvertPalette(PIF_Image *this, PIF_Palette *from, PIF_Palette *to);
-PIF_DEF uint8_t   *PIF_imageAt(PIF_Image *this, int x, int y);
-PIF_DEF PIF_Image *PIF_imageResize(PIF_Image *this, int w, int h);
-PIF_DEF PIF_Image *PIF_imageCopy  (PIF_Image *this, PIF_Image *from);
-PIF_DEF PIF_Image *PIF_imageDup   (PIF_Image *this);
+PIF_DEF void PIF_imageSkipTransparent(PIF_Image *self, bool enable);
 
-PIF_DEF void PIF_imageClear(PIF_Image *this, uint8_t color);
-PIF_DEF void PIF_imageBlit (PIF_Image *this, PIF_Rect *destRect, PIF_Image *src, PIF_Rect *srcRect);
-PIF_DEF void PIF_imageTransformBlit(PIF_Image *this, PIF_Rect *destRect, PIF_Image *src,
+PIF_DEF void       PIF_imageSetShader     (PIF_Image *self, PIF_Shader shader, void *data);
+PIF_DEF void       PIF_imageSetShaderData (PIF_Image *self, void *data);
+PIF_DEF void       PIF_imageConvertPalette(PIF_Image *self, PIF_Palette *from, PIF_Palette *to);
+PIF_DEF uint8_t   *PIF_imageAt(PIF_Image *self, int x, int y);
+PIF_DEF PIF_Image *PIF_imageResize(PIF_Image *self, int w, int h, uint8_t color);
+PIF_DEF PIF_Image *PIF_imageCopy  (PIF_Image *self, PIF_Image *from);
+PIF_DEF PIF_Image *PIF_imageDup   (PIF_Image *self);
+
+PIF_DEF void PIF_imageClear(PIF_Image *self, uint8_t color);
+PIF_DEF void PIF_imageBlit (PIF_Image *self, PIF_Rect *destRect, PIF_Image *src, PIF_Rect *srcRect);
+PIF_DEF void PIF_imageTransformBlit(PIF_Image *self, PIF_Rect *destRect, PIF_Image *src,
                                     PIF_Rect *srcRect, float mat[2][2], int cx, int cy);
-PIF_DEF void PIF_imageRotateBlit(PIF_Image *this, PIF_Rect *destRect, PIF_Image *src,
+PIF_DEF void PIF_imageRotateBlit(PIF_Image *self, PIF_Rect *destRect, PIF_Image *src,
                                  PIF_Rect *srcRect, float angle, int cx, int cy);
 
-PIF_DEF void PIF_imageDrawPoint(PIF_Image *this, int x, int y, uint8_t color);
-PIF_DEF void PIF_imageDrawLine (PIF_Image *this, int x1, int y1, int x2, int y2,
+PIF_DEF void PIF_imageDrawPoint(PIF_Image *self, int x, int y, uint8_t color);
+PIF_DEF void PIF_imageDrawLine (PIF_Image *self, int x1, int y1, int x2, int y2,
                                 int n, uint8_t color);
 
-PIF_DEF void PIF_imageDrawRect    (PIF_Image *this, PIF_Rect *rect, int n, uint8_t color);
-PIF_DEF void PIF_imageDrawCircle  (PIF_Image *this, int cx, int cy, int r, int n, uint8_t color);
-PIF_DEF void PIF_imageDrawTriangle(PIF_Image *this, int x1, int y1, int x2, int y2,
+PIF_DEF void PIF_imageDrawRect    (PIF_Image *self, PIF_Rect *rect, int n, uint8_t color);
+PIF_DEF void PIF_imageDrawCircle  (PIF_Image *self, int cx, int cy, int r, int n, uint8_t color);
+PIF_DEF void PIF_imageDrawTriangle(PIF_Image *self, int x1, int y1, int x2, int y2,
                                    int x3, int y3, int n, uint8_t color);
-PIF_DEF void PIF_imageDrawTransformRect(PIF_Image *this, PIF_Rect *rect, int n, uint8_t color,
+PIF_DEF void PIF_imageDrawTransformRect(PIF_Image *self, PIF_Rect *rect, int n, uint8_t color,
                                         float mat[2][2], int cx, int cy);
-PIF_DEF void PIF_imageDrawRotateRect(PIF_Image *this, PIF_Rect *rect, int n, uint8_t color,
+PIF_DEF void PIF_imageDrawRotateRect(PIF_Image *self, PIF_Rect *rect, int n, uint8_t color,
                                      float angle, int cx, int cy);
 
-PIF_DEF void PIF_imageFillRect    (PIF_Image *this, PIF_Rect *rect, uint8_t color);
-PIF_DEF void PIF_imageFillCircle  (PIF_Image *this, int cx, int cy, int r, uint8_t color);
-PIF_DEF void PIF_imageFillTriangle(PIF_Image *this, int x1, int y1, int x2, int y2,
+PIF_DEF void PIF_imageFillRect    (PIF_Image *self, PIF_Rect *rect, uint8_t color);
+PIF_DEF void PIF_imageFillCircle  (PIF_Image *self, int cx, int cy, int r, uint8_t color);
+PIF_DEF void PIF_imageFillTriangle(PIF_Image *self, int x1, int y1, int x2, int y2,
                                    int x3, int y3, uint8_t color);
-PIF_DEF void PIF_imageFillTransformRect(PIF_Image *this, PIF_Rect *rect, uint8_t color,
+PIF_DEF void PIF_imageFillTransformRect(PIF_Image *self, PIF_Rect *rect, uint8_t color,
                                         float mat[2][2], int cx, int cy);
-PIF_DEF void PIF_imageFillRotateRect(PIF_Image *this, PIF_Rect *rect, uint8_t color,
+PIF_DEF void PIF_imageFillRotateRect(PIF_Image *self, PIF_Rect *rect, uint8_t color,
                                      float angle, int cx, int cy);
 
 typedef struct {
@@ -164,21 +172,39 @@ PIF_DEF PIF_Font *PIF_fontNew(int chHeight, uint8_t *chWidths, PIF_Image *sheet,
                               uint8_t chSpacing, uint8_t lineSpacing);
 PIF_DEF PIF_Font *PIF_fontRead (FILE       *file,  const char **err);
 PIF_DEF PIF_Font *PIF_fontLoad (const char *path,  const char **err);
-PIF_DEF void      PIF_fontWrite(PIF_Font   *this,  FILE        *file);
-PIF_DEF int       PIF_fontSave (PIF_Font   *this,  const char  *path);
-PIF_DEF void      PIF_fontFree (PIF_Font   *this);
+PIF_DEF void      PIF_fontWrite(PIF_Font   *self,  FILE        *file);
+PIF_DEF int       PIF_fontSave (PIF_Font   *self,  const char  *path);
+PIF_DEF void      PIF_fontFree (PIF_Font   *self);
 
-PIF_DEF void PIF_fontSetSpacing(PIF_Font *this, uint8_t chSpacing, uint8_t lineSpacing);
-PIF_DEF void PIF_fontSetScale  (PIF_Font *this, float scale);
+PIF_DEF void PIF_fontSetSpacing(PIF_Font *self, uint8_t chSpacing, uint8_t lineSpacing);
+PIF_DEF void PIF_fontSetScale  (PIF_Font *self, float scale);
 
-PIF_DEF void PIF_fontCharSize(PIF_Font *this, char ch, int *w, int *h);
-PIF_DEF void PIF_fontTextSize(PIF_Font *this, const char *text, int *w, int *h);
+PIF_DEF void PIF_fontCharSize(PIF_Font *self, char ch, int *w, int *h);
+PIF_DEF void PIF_fontTextSize(PIF_Font *self, const char *text, int *w, int *h);
 
-PIF_DEF void PIF_fontRenderChar(PIF_Font *this, char ch, PIF_Image *img,
+PIF_DEF void PIF_fontRenderChar(PIF_Font *self, char ch, PIF_Image *img,
                                 int xStart, int yStart, uint8_t color);
-PIF_DEF void PIF_fontRenderText(PIF_Font *this, const char *text, PIF_Image *img,
+PIF_DEF void PIF_fontRenderText(PIF_Font *self, const char *text, PIF_Image *img,
                                 int xStart, int yStart, uint8_t color);
 
 PIF_DEF PIF_Font *PIF_fontNewDefault(void);
+
+#define PIF_swap(A, B)                      \
+	do {                                   \
+		PIF_assert(sizeof(A) == sizeof(B)); \
+		uint8_t tmp_[sizeof(A)];           \
+		memcpy(tmp_, &(A), sizeof(A));     \
+		A = B;                             \
+		memcpy(&(B), tmp_, sizeof(B));     \
+	} while (0)
+
+#define PIF_zeroStruct(STRUCT) memset(STRUCT, 0, sizeof(*(STRUCT)));
+
+#define PIF_max(A, B) ((A) > (B)? (A) : (B))
+#define PIF_min(A, B) ((A) > (B)? (B) : (A))
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
