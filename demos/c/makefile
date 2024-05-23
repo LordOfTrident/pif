@@ -1,5 +1,5 @@
 SRC  = $(wildcard *.c)
-DEPS = $(wildcard ../../*.h) $(wildcard ../../*.c) $(wildcard *.inc)
+DEPS = $(wildcard ../../*.h) $(wildcard ../../*.c) $(wildcard *.inc) $(wildcard ../*.inc)
 OUT  = $(basename $(SRC))
 
 build: $(OUT)
