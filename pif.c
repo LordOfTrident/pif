@@ -371,6 +371,13 @@ PIF_DEF void PIF_blendShader(int x, int y, uint8_t *pixel, uint8_t color, PIF_Im
 	*pixel = PIF_blendColor(*pixel, color, colormap);
 }
 
+PIF_DEF void PIF_ditherShader(int x, int y, uint8_t *pixel, uint8_t color, PIF_Image *img) {
+	(void)img;
+
+	if (x / 2 % 2 == (y / 2 % 2 == 0))
+		*pixel = color;
+}
+
 PIF_DEF void PIF_copyShader(int x, int y, uint8_t *pixel, uint8_t color, PIF_Image *img) {
 	(void)color;
 	PIF_Image *src = (PIF_Image*)img->data;

@@ -29,7 +29,7 @@ void transparencyReplaceShader(int x, int y, uint8_t *pixel, uint8_t color, PIF_
 	TransparentReplaceData *data = (TransparentReplaceData*)img->data;
 
 	// Replace transparent areas with a checkerboard
-	*pixel = (x / data->size) % 2 == ((y / data->size) % 2 == 0)? data->color1 : data->color2;
+	*pixel = x / data->size % 2 == (y / data->size % 2 == 0)? data->color1 : data->color2;
 }
 
 class Demo : public DemoBase {

@@ -1,10 +1,10 @@
-# TODO (71% done)
-- (`60%`) **Demos**
+# TODO (50% done)
+- (`61%`) **Demos**
 	- (`33%`) **C++**
 		- [ ] 3D .obj loader
 		- [ ] Mode 7 infinite forest demo
 		- [X] Simple drawing program (canvas resizing)
-	- (`87%`) **C**
+	- (`88%`) **C**
 		- [X] Palette loading and displaying program
 		- [X] Triangles demo
 		- [X] Blitting demo
@@ -12,8 +12,9 @@
 		- [X] Simple 3d dots demo
 		- [X] Custom shader demo (blur)
 		- [X] Text rendering demo
+		- [X] Dithering and blend shaders demo
 		- [ ] Barycentric rainbow triangle demo
-- (`83%`) **Features**
+- (`91%`) **Features**
 	- [X] Palette/image loading
 	- [X] Rectangle/line draw/fill functions
 	- [X] Circle draw/fill functions
@@ -24,5 +25,8 @@
 	- [X] Shaders and built-in blend shader
 	- [X] Text rendering (font files)
 	- [X] Blit rotating/transforming functions
+	- [X] Built-in dithering blend shader
 	- [ ] Triangle rotating/transforming draw/fill functions
-	- [ ] Fix overdrawing pixels (PIF_imageDrawCircle and others)
+- (`0%`) **Bugs to fix**
+	- [ ] Pixel overdrawing (in PIF_imageDrawCircle and others)
+	- [ ] Imprecise dashed/dotted line drawing (in PIF_imageDrawCircle)

@@ -85,8 +85,9 @@ PIF_DEF PIF_Image *PIF_paletteCreateColormap(PIF_Palette *self, int shades, floa
 
 typedef void (*PIF_Shader)(int, int, uint8_t*, uint8_t, PIF_Image*);
 
-PIF_DEF void PIF_blendShader(int x, int y, uint8_t *pixel, uint8_t color, PIF_Image *img);
-PIF_DEF void PIF_copyShader(int x, int y, uint8_t *pixel, uint8_t color, PIF_Image *img);
+PIF_DEF void PIF_blendShader (int x, int y, uint8_t *pixel, uint8_t color, PIF_Image *img);
+PIF_DEF void PIF_ditherShader(int x, int y, uint8_t *pixel, uint8_t color, PIF_Image *img);
+PIF_DEF void PIF_copyShader  (int x, int y, uint8_t *pixel, uint8_t color, PIF_Image *img);
 
 typedef struct {
 	PIF_Image *src;

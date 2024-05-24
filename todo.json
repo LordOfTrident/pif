@@ -75,6 +75,12 @@
 					},
 					{
 						"type": "task",
+						"title": "Dithering and blend shaders demo",
+						"desc": null,
+						"done": true
+					},
+					{
+						"type": "task",
 						"title": "Barycentric rainbow triangle demo",
 						"desc": null,
 						"done": false
@@ -144,6 +150,12 @@
 			{
 				"type": "task",
 				"title": "Blit rotating/transforming functions",
+				"desc": null,
+				"done": true
+			},
+			{
+				"type": "task",
+				"title": "Built-in dithering blend shader",
 				"desc": null,
 				"done": true
 			},
