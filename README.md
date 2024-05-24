@@ -85,7 +85,8 @@ for every palettized software rendered game I make in the future. And so the ide
 </div>
 
 ### Pre-requisites
-The demo programs use C/C++ and the SDL2 library, so the following is required:
+The demo programs use C/C++ and since this library does not handle displaying the images onto
+a window, the SDL2 library is used for that. So the following is required to compile the demos:
 - A C/C++ compiler
 - Makefile
 - [SDL2](https://github.com/libsdl-org/SDL)
