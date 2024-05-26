@@ -5,38 +5,8 @@
 		"children": [
 			{
 				"type": "group",
-				"title": "C++",
+				"title": "SDL2",
 				"children": [
-					{
-						"type": "task",
-						"title": "3D .obj loader",
-						"desc": null,
-						"done": false
-					},
-					{
-						"type": "task",
-						"title": "Mode 7 infinite forest demo",
-						"desc": null,
-						"done": false
-					},
-					{
-						"type": "task",
-						"title": "Simple drawing program (canvas resizing)",
-						"desc": null,
-						"done": true
-					}
-				]
-			},
-			{
-				"type": "group",
-				"title": "C",
-				"children": [
-					{
-						"type": "task",
-						"title": "Palette loading and displaying program",
-						"desc": null,
-						"done": true
-					},
 					{
 						"type": "task",
 						"title": "Triangles demo",
@@ -81,7 +51,61 @@
 					},
 					{
 						"type": "task",
+						"title": "Simple drawing program (canvas resizing)",
+						"desc": null,
+						"done": true
+					},
+					{
+						"type": "task",
+						"title": "PIF image viewer",
+						"desc": null,
+						"done": false
+					},
+					{
+						"type": "task",
 						"title": "Barycentric rainbow triangle demo",
+						"desc": null,
+						"done": false
+					}
+				]
+			},
+			{
+				"type": "group",
+				"title": "NCurses",
+				"children": [
+					{
+						"type": "task",
+						"title": "Triangle and circle drawing and blending",
+						"desc": null,
+						"done": false
+					},
+					{
+						"type": "task",
+						"title": "Text with some cool animated shader",
+						"desc": null,
+						"done": false
+					},
+					{
+						"type": "task",
+						"title": "Palette loading and displaying program",
+						"desc": null,
+						"done": false
+					}
+				]
+			},
+			{
+				"type": "group",
+				"title": "File IO",
+				"children": [
+					{
+						"type": "task",
+						"title": "PIF image palette converting",
+						"desc": null,
+						"done": false
+					},
+					{
+						"type": "task",
+						"title": "PIF image generator",
 						"desc": null,
 						"done": false
 					}
@@ -162,6 +186,18 @@
 			{
 				"type": "task",
 				"title": "Triangle rotating/transforming draw/fill functions",
+				"desc": null,
+				"done": false
+			},
+			{
+				"type": "task",
+				"title": "Loading images/fonts/palettes from memory from a byte buffer",
+				"desc": null,
+				"done": false
+			},
+			{
+				"type": "task",
+				"title": "Faster way to palettize an RGB color (maybe with a pre-calculated map)",
 				"desc": null,
 				"done": false
 			}

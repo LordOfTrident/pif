@@ -34,8 +34,9 @@ extern "C" {
 #	define PIF_DEF
 #endif
 
-#define PIF_COLORS      256
-#define PIF_TRANSPARENT 0
+#define PIF_COLORS         256
+#define PIF_TRANSPARENT    0
+#define PIF_DEFAULT_SHADES 64
 
 #define PIF_STD_BLACK 1
 #define PIF_STD_WHITE 2
@@ -80,6 +81,13 @@ PIF_DEF void         PIF_paletteWrite(PIF_Palette *self, FILE        *file);
 PIF_DEF int          PIF_paletteSave (PIF_Palette *self, const char  *path);
 PIF_DEF void         PIF_paletteFree (PIF_Palette *self);
 
+#define PIF_palettesFree(...)                                            \
+	do {                                                                 \
+		PIF_Palette *pals_[] = {__VA_ARGS__};                            \
+		for (int i = 0; i < (int)(sizeof(pals_) / sizeof(*pals_)); ++ i) \
+			PIF_paletteFree(pals_[i]);                                   \
+	} while (0)
+
 PIF_DEF uint8_t    PIF_paletteClosest(PIF_Palette *self, PIF_Rgb rgb);
 PIF_DEF PIF_Image *PIF_paletteCreateColormap(PIF_Palette *self, int shades, float t);
 
@@ -116,6 +124,13 @@ PIF_DEF PIF_Image *PIF_imageLoad (const char *path, const char **err);
 PIF_DEF void       PIF_imageWrite(PIF_Image  *self, FILE        *file);
 PIF_DEF int        PIF_imageSave (PIF_Image  *self, const char  *path);
 PIF_DEF void       PIF_imageFree (PIF_Image  *self);
+
+#define PIF_imagesFree(...)                                              \
+	do {                                                                 \
+		PIF_Image *imgs_[] = {__VA_ARGS__};                              \
+		for (int i = 0; i < (int)(sizeof(imgs_) / sizeof(*imgs_)); ++ i) \
+			PIF_imageFree(imgs_[i]);                                     \
+	} while (0)
 
 PIF_DEF void PIF_imageSkipTransparent(PIF_Image *self, bool enable);
 
@@ -177,6 +192,13 @@ PIF_DEF void      PIF_fontWrite(PIF_Font   *self,  FILE        *file);
 PIF_DEF int       PIF_fontSave (PIF_Font   *self,  const char  *path);
 PIF_DEF void      PIF_fontFree (PIF_Font   *self);
 
+#define PIF_fontsFree(...)                                                 \
+	do {                                                                   \
+		PIF_Font *fonts_[] = {__VA_ARGS__};                                \
+		for (int i = 0; i < (int)(sizeof(fonts_) / sizeof(*fonts_)); ++ i) \
+			PIF_fontFree(fonts_[i]);                                       \
+	} while (0)
+
 PIF_DEF void PIF_fontSetSpacing(PIF_Font *self, uint8_t chSpacing, uint8_t lineSpacing);
 PIF_DEF void PIF_fontSetScale  (PIF_Font *self, float scale);
 
@@ -191,12 +213,12 @@ PIF_DEF void PIF_fontRenderText(PIF_Font *self, const char *text, PIF_Image *img
 PIF_DEF PIF_Font *PIF_fontNewDefault(void);
 
 #define PIF_swap(A, B)                      \
-	do {                                   \
+	do {                                    \
 		PIF_assert(sizeof(A) == sizeof(B)); \
-		uint8_t tmp_[sizeof(A)];           \
-		memcpy(tmp_, &(A), sizeof(A));     \
-		A = B;                             \
-		memcpy(&(B), tmp_, sizeof(B));     \
+		uint8_t tmp_[sizeof(A)];            \
+		memcpy(tmp_, &(A), sizeof(A));      \
+		A = B;                              \
+		memcpy(&(B), tmp_, sizeof(B));      \
 	} while (0)
 
 #define PIF_zeroStruct(STRUCT) memset(STRUCT, 0, sizeof(*(STRUCT)));

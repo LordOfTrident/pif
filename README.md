@@ -84,29 +84,33 @@ for every palettized software rendered game I make in the future. And so the ide
 	<img src="./res/demo3.gif" width="57%">
 </div>
 
+The [demos folder](demos) contains subfolders for [graphical](demos/sdl2), [textmode](demos/ncurses)
+and [pure file IO](demos/fileio) demos.
+
 ### Pre-requisites
-The demo programs use C/C++ and since this library does not handle displaying the images onto
-a window, the SDL2 library is used for that. So the following is required to compile the demos:
+Demos are written in C and C++. PIF does not handle displaying images onto the screen, so the SDL2
+and NCurses libraries are used for that in the demos.
+
+The following is required to compile the demos:
 - A C/C++ compiler
 - Makefile
+- NCurses
 - [SDL2](https://github.com/libsdl-org/SDL)
 
 #### Debian
 ```
-$ apt install gcc g++ make libsdl2-dev
+$ apt install gcc g++ make libsdl2-dev ncurses
 ```
 
 #### Arch
 ```
-$ pacman -S gcc make sdl2
+$ pacman -S gcc make sdl2 ncurses
 ```
 
 ### Quickstart
-C demos are located in [demos/c/](demos/c/) and C++ demos are located in [demos/cpp/](demos/cpp/)
-
 ```sh
 $ git clone https://github.com/LordOfTrident/pif
-$ cd pif/demos/c/
+$ cd pif/demos/sdl2
 $ make
 $ ./dots3d
 ```

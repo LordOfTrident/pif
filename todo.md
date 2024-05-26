@@ -1,11 +1,6 @@
-# TODO (50% done)
-- (`61%`) **Demos**
-	- (`33%`) **C++**
-		- [ ] 3D .obj loader
-		- [ ] Mode 7 infinite forest demo
-		- [X] Simple drawing program (canvas resizing)
-	- (`88%`) **C**
-		- [X] Palette loading and displaying program
+# TODO (35% done)
+- (`26%`) **Demos**
+	- (`80%`) **SDL2**
 		- [X] Triangles demo
 		- [X] Blitting demo
 		- [X] Rotate/transform demo
@@ -13,8 +8,17 @@
 		- [X] Custom shader demo (blur)
 		- [X] Text rendering demo
 		- [X] Dithering and blend shaders demo
+		- [X] Simple drawing program (canvas resizing)
+		- [ ] PIF image viewer
 		- [ ] Barycentric rainbow triangle demo
-- (`91%`) **Features**
+	- (`0%`) **NCurses**
+		- [ ] Triangle and circle drawing and blending
+		- [ ] Text with some cool animated shader
+		- [ ] Palette loading and displaying program
+	- (`0%`) **File IO**
+		- [ ] PIF image palette converting
+		- [ ] PIF image generator
+- (`78%`) **Features**
 	- [X] Palette/image loading
 	- [X] Rectangle/line draw/fill functions
 	- [X] Circle draw/fill functions
@@ -27,6 +31,8 @@
 	- [X] Blit rotating/transforming functions
 	- [X] Built-in dithering blend shader
 	- [ ] Triangle rotating/transforming draw/fill functions
+	- [ ] Loading images/fonts/palettes from memory from a byte buffer
+	- [ ] Faster way to palettize an RGB color (maybe with a pre-calculated map)
 - (`0%`) **Bugs to fix**
 	- [ ] Pixel overdrawing (in PIF_imageDrawCircle and others)
 	- [ ] Imprecise dashed/dotted line drawing (in PIF_imageDrawCircle)
