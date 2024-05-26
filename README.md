@@ -119,7 +119,8 @@ $ ./dots3d
 Coming soon.
 
 ## Bugs
-If you find any bugs, please, [create an issue and report them](https://github.com/LordOfTrident/pif/issues).
+Known bugs are listed in the [todo file](todo.md). If you find any more bugs, please,
+[create an issue and report them](https://github.com/LordOfTrident/pif/issues).
 
 <br>
 <h1></h1>
