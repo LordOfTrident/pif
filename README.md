@@ -77,15 +77,15 @@ converting etc. Then I could make utilities for working with these image files, 
 for every palettized software rendered game I make in the future. And so the idea of PIF was born.
 
 ## Demos
+The [demos folder](demos) contains subfolders for [graphical](demos/sdl2), [textmode](demos/ncurses)
+and [pure file IO](demos/fileio) demos.
+
 <div align="center">
 	<img src="./res/demo2.gif" width="47%">
 	<img src="./res/demo4.gif" width="43%">
 	<img src="./res/demo1.gif" width="33%">
 	<img src="./res/demo3.gif" width="57%">
 </div>
-
-The [demos folder](demos) contains subfolders for [graphical](demos/sdl2), [textmode](demos/ncurses)
-and [pure file IO](demos/fileio) demos.
 
 ### Pre-requisites
 Demos are written in C and C++. PIF does not handle displaying images onto the screen, so the SDL2
