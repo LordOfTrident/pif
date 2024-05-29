@@ -76,12 +76,10 @@ int main(void) {
 		double dt = (double)(now - last);
 		elapsedTime += dt;
 
-		//printf("\033]0;%li\007\n", (long)now);
-
 		/* Render */
 		render(dt);
 
-		/* Update screen texture */
+		/* Update screen */
 		move(0, 0);
 		for (int i = 0; i < canv->size; ++ i) {
 			assert(canv->buf[i] < pal->size);
@@ -106,6 +104,7 @@ int main(void) {
 
 		handleKey(key);
 
+		/* Delay to prevent CPU spiking */
 		napms(1000.0 / FPS);
 	}
 	cleanup();
