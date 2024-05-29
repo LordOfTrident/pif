@@ -75,9 +75,9 @@
 				"children": [
 					{
 						"type": "task",
-						"title": "Triangle and circle drawing and blending",
+						"title": "Shapes (triangle, circle, square) drawing and blending",
 						"desc": null,
-						"done": false
+						"done": true
 					},
 					{
 						"type": "task",
@@ -209,7 +209,7 @@
 		"children": [
 			{
 				"type": "task",
-				"title": "Pixel overdrawing (in PIF_imageDrawCircle and others)",
+				"title": "Pixel overdrawing (in PIF_imageDrawCircle, PIF_imageFillRotateRect and others)",
 				"desc": null,
 				"done": false
 			},

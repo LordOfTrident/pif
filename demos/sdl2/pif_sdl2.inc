@@ -46,7 +46,7 @@ int main(void) {
 	pixels      = (uint32_t*)malloc(canv->size * sizeof(uint32_t));
 	winW        = SCR_W;
 	winH        = SCR_H;
-	aspectRatio = ((float)SCR_H / SCR_W);
+	aspectRatio = (float)SCR_H / SCR_W;
 	running     = true;
 
 	/* SDL2 setup */

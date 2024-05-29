@@ -537,6 +537,9 @@ PIF_DEF uint8_t *PIF_imageAt(PIF_Image *self, int x, int y) {
 }
 
 PIF_DEF PIF_Image *PIF_imageResize(PIF_Image *self, int w, int h, uint8_t color) {
+	if (self->w == w && self->h == h)
+		return self;
+
 	uint8_t *prevBuf = (uint8_t*)PIF_alloc(self->size);
 	PIF_checkAlloc(prevBuf);
 	memcpy(prevBuf, self->buf, self->size);
