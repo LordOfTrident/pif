@@ -90,6 +90,10 @@ and [pure file IO](demos/fileio) demos.
 > [!NOTE]
 > The terminal demos do not support Windows.
 
+<div align="center">
+	<img src="./res/demo5.gif" width="60%">
+</div>
+
 ### Pre-requisites
 Demos are written in C and C++. PIF does not handle displaying images onto the screen, so the SDL2
 and NCurses libraries are used for that in the demos.
