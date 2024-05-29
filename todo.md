@@ -1,5 +1,5 @@
-# TODO (35% done)
-- (`26%`) **Demos**
+# TODO (38% done)
+- (`37%`) **Demos**
 	- (`80%`) **SDL2**
 		- [X] Triangles demo
 		- [X] Blitting demo
@@ -11,8 +11,8 @@
 		- [X] Simple drawing program (canvas resizing)
 		- [ ] PIF image viewer
 		- [ ] Barycentric rainbow triangle demo
-	- (`0%`) **NCurses**
-		- [ ] Triangle and circle drawing and blending
+	- (`33%`) **NCurses**
+		- [X] Shapes (triangle, circle, square) drawing and blending
 		- [ ] Text with some cool animated shader
 		- [ ] Palette loading and displaying program
 	- (`0%`) **File IO**
@@ -34,5 +34,5 @@
 	- [ ] Loading images/fonts/palettes from memory from a byte buffer
 	- [ ] Faster way to palettize an RGB color (maybe with a pre-calculated map)
 - (`0%`) **Bugs to fix**
-	- [ ] Pixel overdrawing (in PIF_imageDrawCircle and others)
+	- [ ] Pixel overdrawing (in PIF_imageDrawCircle, PIF_imageFillRotateRect and others)
 	- [ ] Imprecise dashed/dotted line drawing (in PIF_imageDrawCircle)
