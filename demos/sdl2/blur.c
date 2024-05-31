@@ -12,7 +12,7 @@ typedef struct {
 	int          size;
 } Blur;
 
-PIF_Image *colormap;
+PIF_Image *colormap, *rgbmap;
 PIF_Font  *font;
 unsigned   seed;
 bool       paused;
@@ -21,6 +21,7 @@ double     animTime;
 
 void setup(void) {
 	colormap  = PIF_paletteCreateColormap(pal, PIF_DEFAULT_SHADES, 0.65);
+	rgbmap    = PIF_paletteCreateRgbmap(pal, 32);
 	font      = PIF_fontNewDefault();
 	seed      = (unsigned)time(NULL);
 	blur.pal  = pal;
@@ -28,7 +29,7 @@ void setup(void) {
 }
 
 void cleanup(void) {
-	PIF_imagesFree(colormap);
+	PIF_imagesFree(colormap, rgbmap);
 	PIF_fontFree(font);
 }
 
@@ -51,13 +52,22 @@ void blurShader(int x, int y, uint8_t *pixel, uint8_t color, PIF_Image *img) {
 		}
 	}
 
-	/* Finding the closest color for every pixel like this is very inefficient, but it serves only
-	   as a demo for the PIF shaders. Maybe a 3D RGB map could be created for this later. */
-	*pixel = PIF_paletteClosest(blur->pal, (PIF_Rgb){
+	/* Finding the closest color for every pixel like this is very inefficient, because it has to
+	   loop through the entire palette and find the closest color.
+
+		*pixel = PIF_paletteClosest(blur->pal, (PIF_Rgb){
+			.r = r / pow(blur->size * 2 + 1, 2),
+			.g = g / pow(blur->size * 2 + 1, 2),
+			.b = b / pow(blur->size * 2 + 1, 2),
+		});
+	*/
+
+	/* A faster, but memory-heavy way to convert RGB to a color, using an rgbmap. */
+	*pixel = PIF_rgbToColor((PIF_Rgb){
 		.r = r / pow(blur->size * 2 + 1, 2),
 		.g = g / pow(blur->size * 2 + 1, 2),
 		.b = b / pow(blur->size * 2 + 1, 2),
-	});
+	}, rgbmap);
 }
 
 void renderBackground(double dt) {

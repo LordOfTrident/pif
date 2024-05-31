@@ -64,6 +64,7 @@ typedef struct {
 
 PIF_DEF int      PIF_rgbDiff(PIF_Rgb a, PIF_Rgb b);
 PIF_DEF PIF_Rgb  PIF_rgbLerp(PIF_Rgb a, PIF_Rgb b, float t);
+PIF_DEF uint8_t  PIF_rgbToColor(PIF_Rgb rgb, PIF_Image *rgbmap);
 PIF_DEF uint32_t PIF_rgbToPixelRgba32(PIF_Rgb self);
 PIF_DEF uint32_t PIF_rgbToPixelAbgr32(PIF_Rgb self);
 PIF_DEF PIF_Rgb  PIF_rgbFromPixelRgba32(uint32_t pixel);
@@ -90,6 +91,7 @@ PIF_DEF void         PIF_paletteFree (PIF_Palette *self);
 
 PIF_DEF uint8_t    PIF_paletteClosest(PIF_Palette *self, PIF_Rgb rgb);
 PIF_DEF PIF_Image *PIF_paletteCreateColormap(PIF_Palette *self, int shades, float t);
+PIF_DEF PIF_Image *PIF_paletteCreateRgbmap(PIF_Palette *self, uint8_t size);
 
 typedef void (*PIF_Shader)(int, int, uint8_t*, uint8_t, PIF_Image*);
 

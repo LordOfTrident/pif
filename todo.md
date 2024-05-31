@@ -1,4 +1,4 @@
-# TODO (38% done)
+# TODO (41% done)
 - (`37%`) **Demos**
 	- (`80%`) **SDL2**
 		- [X] Triangles demo
@@ -18,7 +18,7 @@
 	- (`0%`) **File IO**
 		- [ ] PIF image palette converting
 		- [ ] PIF image generator
-- (`78%`) **Features**
+- (`85%`) **Features**
 	- [X] Palette/image loading
 	- [X] Rectangle/line draw/fill functions
 	- [X] Circle draw/fill functions
@@ -32,7 +32,7 @@
 	- [X] Built-in dithering blend shader
 	- [ ] Triangle rotating/transforming draw/fill functions
 	- [ ] Loading images/fonts/palettes from memory from a byte buffer
-	- [ ] Faster way to palettize an RGB color (maybe with a pre-calculated map)
+	- [X] Faster way to palettize an RGB color (maybe with a pre-calculated map)
 - (`0%`) **Bugs to fix**
 	- [ ] Pixel overdrawing (in PIF_imageDrawCircle, PIF_imageFillRotateRect and others)
 	- [ ] Imprecise dashed/dotted line drawing (in PIF_imageDrawCircle)

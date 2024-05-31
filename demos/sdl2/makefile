@@ -1,5 +1,5 @@
 SRC  = $(wildcard *.c) $(wildcard *.cc)
-DEPS = $(wildcard *.inc) $(wildcard ../*.h) $(wildcard ../*.c)
+DEPS = $(wildcard *.inc) $(wildcard ../../*.h) $(wildcard ../../*.c)
 OUT  = $(basename $(SRC))
 
 CSTD   = c99

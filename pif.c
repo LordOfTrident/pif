@@ -157,6 +157,15 @@ PIF_DEF PIF_Rgb PIF_rgbLerp(PIF_Rgb a, PIF_Rgb b, float t) {
 	return rgb;
 }
 
+PIF_DEF uint8_t PIF_rgbToColor(PIF_Rgb rgb, PIF_Image *rgbmap) {
+	PIF_assert(rgbmap->h == rgbmap->w * rgbmap->w);
+
+	rgb.r = (float)rgb.r / 255 * (rgbmap->w - 1);
+	rgb.g = (float)rgb.g / 255 * (rgbmap->w - 1);
+	rgb.b = (float)rgb.b / 255 * (rgbmap->w - 1);
+	return *PIF_imageAt(rgbmap, rgb.r, (int)rgb.g + (int)rgb.b * rgbmap->w);
+}
+
 PIF_DEF uint32_t PIF_rgbToPixelRgba32(PIF_Rgb self) {
 	uint8_t bytes[4] = {
 		255,
@@ -361,6 +370,24 @@ PIF_DEF PIF_Image *PIF_paletteCreateColormap(PIF_Palette *self, int shades, floa
 		}
 	}
 	return colormap;
+}
+
+PIF_DEF PIF_Image *PIF_paletteCreateRgbmap(PIF_Palette *self, uint8_t size) {
+	PIF_assert(self != NULL);
+
+	PIF_Image *rgbmap = PIF_imageNew(size, (int)size * size);
+	for (int r = 0; r < size; ++ r) {
+		for (int g = 0; g < size; ++ g) {
+			for (int b = 0; b < size; ++ b) {
+				PIF_Rgb rgb;
+				rgb.r = (float)r / (size - 1) * 255;
+				rgb.g = (float)g / (size - 1) * 255;
+				rgb.b = (float)b / (size - 1) * 255;
+				*PIF_imageAt(rgbmap, r, g + b * size) = PIF_paletteClosest(self, rgb);
+			}
+		}
+	}
+	return rgbmap;
 }
 
 PIF_DEF void PIF_blendShader(int x, int y, uint8_t *pixel, uint8_t color, PIF_Image *img) {
