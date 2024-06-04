@@ -401,7 +401,7 @@ PIF_DEF void PIF_blendShader(int x, int y, uint8_t *pixel, uint8_t color, PIF_Im
 PIF_DEF void PIF_ditherShader(int x, int y, uint8_t *pixel, uint8_t color, PIF_Image *img) {
 	(void)img;
 
-	if (x / 2 % 2 == (y / 2 % 2 == 0))
+	if (x % 2 == (y % 2 == 0))
 		*pixel = color;
 }
 
