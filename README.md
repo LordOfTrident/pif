@@ -52,7 +52,7 @@
 						<li><a href="#arch">Arch</a></li>
 					</ul>
 				</li>
-				<li><a href="#debian">Quickstart</a></li>
+				<li><a href="#quickstart">Quickstart</a></li>
 			</ul>
 		</li>
 		<li><a href="#documentation">Documentation</a></li>
