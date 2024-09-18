@@ -474,7 +474,7 @@ PIF_DEF PIF_Image *PIF_imageRead(FILE *file, const char **err) {
 	return self;
 }
 
-PIF_DEF PIF_Image *PIF_Image_load(const char *path, const char **err) {
+PIF_DEF PIF_Image *PIF_imageLoad(const char *path, const char **err) {
 	PIF_assert(path != NULL);
 
 	FILE *file = fopen(path, "rb");
