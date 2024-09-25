@@ -1237,7 +1237,7 @@ uint8_t PIF_defaultFontWidths[256] = {
 	2, 3, 3, 3, 3, 3, 3, 4, 3, 1, 3, 3, 3, 5, 4, 3, 3, 3, 3, 3, 3, 3, 3, 5, 3, 3, 3, 3, 1, 3, 4,
 };
 
-/* Yes, i wrote all of self out manually (not joking) */
+/* Yes, i wrote all of this out manually (not joking) */
 uint8_t PIF_defaultFontPixels[PIF_DEFAULT_FONT_H][PIF_DEFAULT_FONT_W] = {
 	{0, 0, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 0, 1, 0, 1, 0, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0, 0},
 	{0, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 0, 1, 0, 1, 1, 0, 0, 1, 0, 1, 0, 0, 0},
