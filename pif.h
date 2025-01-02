@@ -8,9 +8,10 @@ extern "C" {
 #include <stdio.h>   /* fopen, fclose, FILE, EOF, fprintf, stderr, fwrite, fread */
 #include <stdlib.h>  /* malloc, realloc, free, abort */
 #include <string.h>  /* memset, memcpy, strncpy */
-#include <stdint.h>  /* uint8_t, uint32_t */
+#include <stdint.h>  /* uint8_t, uint16_t, uint32_t */
 #include <stdbool.h> /* bool, true, false */
 #include <math.h>    /* sin, cos, round */
+#include <limits.h>  /* USHRT_MAX */
 
 #ifndef PIF_alloc
 #	define PIF_alloc(SIZE) malloc(SIZE)

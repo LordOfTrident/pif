@@ -86,6 +86,16 @@ static void PIF_makeRotationMatrix2x2(float angle, float mat[2][2]) {
 	mat[1][1] =  angleCos;
 }
 
+static uint16_t PIF_bytesToU16(uint8_t *input) {
+	return ((uint16_t)input[0]) |
+	       ((uint16_t)input[1] << 8);
+}
+
+static void PIF_u16ToBytes(uint16_t input, uint8_t *output) {
+	output[0] =  input & 0x00FF;
+	output[1] = (input & 0xFF00) >> 8;
+}
+
 static uint32_t PIF_bytesToU32(uint8_t *input) {
 	return ((uint32_t)input[0])       |
 	       ((uint32_t)input[1] << 8)  |
@@ -100,18 +110,18 @@ static void PIF_u32ToBytes(uint32_t input, uint8_t *output) {
 	output[3] = (input & 0xFF000000) >> 24;
 }
 
-static int PIF_read32(FILE *file, uint32_t *output) {
-	uint8_t bytes[4];
+static int PIF_read16(FILE *file, uint16_t *output) {
+	uint8_t bytes[2];
 	if (fread(bytes, 1, sizeof(bytes), file) != sizeof(bytes))
 		return -1;
 
-	*output = PIF_bytesToU32(bytes);
+	*output = PIF_bytesToU16(bytes);
 	return 0;
 }
 
-static void PIF_write32(FILE *file, uint32_t input) {
+static void PIF_write16(FILE *file, uint16_t input) {
 	uint8_t bytes[4];
-	PIF_u32ToBytes(input, bytes);
+	PIF_u16ToBytes(input, bytes);
 	fwrite(bytes, 1, sizeof(bytes), file);
 }
 
@@ -460,8 +470,8 @@ PIF_DEF PIF_Image *PIF_imageRead(FILE *file, const char **err) {
 		return (PIF_Image*)PIF_error(err, "File is not a PIF image");
 
 	/* Read header */
-	uint32_t w, h;
-	if (PIF_read32(file, &w) != 0 || PIF_read32(file, &h) != 0)
+	uint16_t w, h;
+	if (PIF_read16(file, &w) != 0 || PIF_read16(file, &h) != 0)
 		return (PIF_Image*)PIF_error(err, "Failed to read PIF image size");
 
 	PIF_Image *self = PIF_imageNew(w, h);
@@ -495,8 +505,9 @@ PIF_DEF void PIF_imageWrite(PIF_Image *self, FILE *file) {
 	fwrite(PIF_IMAGE_MAGIC, 1, sizeof(PIF_IMAGE_MAGIC) - 1, file);
 
 	/* Write header */
-	PIF_write32(file, self->w);
-	PIF_write32(file, self->h);
+	PIF_assert(self->w <= USHRT_MAX && self->h <= USHRT_MAX);
+	PIF_write16(file, self->w);
+	PIF_write16(file, self->h);
 
 	/* Write body */
 	fwrite(self->buf, 1, self->size, file);
