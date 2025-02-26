@@ -21,9 +21,9 @@
 	<p align="center">🎨 Palettized image format and software renderer 🖼️</p>
 	<p align="center">
 		<a href="#documentation">Documentation</a>
-		.
+		·
 		<a href="#demos">Demos</a>
-		.
+		·
 		<a href="todo.md">Todo</a>
 		·
 		<a href="https://github.com/LordOfTrident/pif/issues">Report Bug</a>
